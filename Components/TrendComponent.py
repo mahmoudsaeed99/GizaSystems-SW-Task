@@ -4,7 +4,7 @@ Created on Wed Aug 30 17:10:40 2023
 
 @author: Mahmoud Saeed
 """
-from AdditionalComponent import *
+from Components.AdditionalComponent import *
 
 
 class TrendComponent(AdditionalComponent):

@@ -11,7 +11,10 @@ from fileFactor import fileFactor
 class ConfigManager:
     
     def readConfig(self, name ):
-        file = fileFactor().createFile(name)
+        try:
+            file = fileFactor().createFile(name)
+        except:
+            print("not supported file or no file in this destination")
         configs = file.readConfig()
         return configs
     

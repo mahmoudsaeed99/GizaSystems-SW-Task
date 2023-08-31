@@ -6,7 +6,7 @@ Created on Wed Aug 30 00:37:11 2023
 """
 
 
-from Producer import Producer
+from DataProducer.Producer import Producer
 
 
 #class CVSProducer inherit from Producer 
@@ -15,7 +15,7 @@ from Producer import Producer
 class CVSProducer(Producer):
     
     def saveData(self, data,name):
-        data.to_csv(name+".csv")
+        data.to_csv(name,encoding='utf-8', index=False)
         return
     
     

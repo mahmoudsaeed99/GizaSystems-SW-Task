@@ -4,8 +4,9 @@ Created on Tue Aug 29 23:00:51 2023
 
 @author: Mahmoud Saeed
 """
-from CSVFile import CSVFile
-
+# from  CSVFile import CSVFile
+from ConfigManager.CSVFile import CSVFile
+from ConfigManager.XMLFile import XMLFile
 
 # Class fileFactor help us to return the correct object of file that we want
 # to get the data like `csv`.....etc.
@@ -17,7 +18,7 @@ class fileFactor:
             return CSVFile(name)
         else:
             raise Exception("file not supported")
-            return
+            
        
         
             

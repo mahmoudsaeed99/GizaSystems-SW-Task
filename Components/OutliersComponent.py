@@ -4,7 +4,7 @@ Created on Wed Aug 30 17:15:54 2023
 
 @author: Mahmoud Saeed
 """
-from AdditionalComponent import *
+from Components.AdditionalComponent import *
 
 
 class OutliersComponent(AdditionalComponent):
