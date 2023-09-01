@@ -14,6 +14,14 @@ from ConfigManager.XMLFile import XMLFile
 class fileFactor:
     
     def createFile(self,name):
+        """
+       Create object file to read the Configs.
+
+       Parameters:
+           name(Str): The file name to consider which object will return.
+       Returns:
+           File(Object): The object of file type .
+       """
         if name[-4:] == ".csv":
             return CSVFile(name)
         else:
