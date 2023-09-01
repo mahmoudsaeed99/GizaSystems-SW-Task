@@ -11,6 +11,15 @@ from fileFactor import fileFactor
 class ConfigManager:
     
     def readConfig(self, name ):
+        """
+       Read config from diff sources.
+
+       Parameters:
+           name (String): The file name that contains the configs.
+           
+       Returns:
+           pandas.dataframe: the configs data.
+       """
         try:
             file = fileFactor().createFile(name)
         except:
