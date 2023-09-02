@@ -42,6 +42,7 @@ def main():
     # percentage_outliers_options = [0.05]  # , 0]
     # data_sizes = [60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 365]
     meta_data = []
+    data
     counter = 0
     # for freq in frequencies:
     for daily_seasonality in configData.daily_seasonality_options:
@@ -103,9 +104,10 @@ def main():
 
                                     # Save the data to a CSV file
                                     df = pd.DataFrame({'value': data, 'timestamp': date_rng, 'anomaly': anomaly})
-                                    df.to_csv('sample_datasets/' + str(counter) + '.csv', encoding='utf-8', index=False)
-
-                                    """
+                                    # df.to_csv('sample_datasets/' + str(counter) + '.csv', encoding='utf-8', index=False)
+                                    fileName = 'sample_datasets/' + str(counter) + '.csv'
+                                    CVSProducer().saveData(df , fileName) 
+                                    """s
                                     import matplotlib.pyplot as plt
                                     plt.figure(figsize=(10, 6))
                                     # Plot the time series data
@@ -136,7 +138,7 @@ def main():
                                     # generate_csv(list(zip(date_rng, data)), file_name)
 
     meta_data_df = pd.DataFrame.from_records(meta_data)
-    CVSProducer.saveData(meta_data_df , 'sample_datasets/meta_data.csv')
+    CVSProducer().saveData(meta_data_df , 'sample_datasets/meta_data.csv')
     # meta_data_df.to_csv('sample_datasets/meta_data.csv', encoding='utf-8', index=False)
 
 

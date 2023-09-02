@@ -10,7 +10,7 @@ class SeasonalComponent(AdditionalComponent):
     
    def addComponent(self, data, seasonality, season_type , type_ = 'daily'):
        """
-       Add weekly seasonality component to the time series data.
+       Add seasonality component to the time series data.
 
        Parameters:
            data (DatetimeIndex): The time index for the data.
