@@ -77,13 +77,13 @@ def main():
                                                                                      season_type=data_type ,type_='weekly')
                                     # weekly_seasonal_component = add_weekly_seasonality(date_rng, weekly_seasonality,
                                     #                                                    season_type=data_type)
-                                    trend_component = TrendComponent.addComponent(date_rng, trend, data_size=data_size,
+                                    trend_component = TrendComponent().addComponent(date_rng, trend, data_size=data_size,
                                                                 data_type=data_type)
                                     
                                     # trend_component = add_trend(date_rng, trend, data_size=data_size,
                                     #                             data_type=data_type)
                                     cyclic_period = "exist"
-                                    cyclic_component = CyclesComponent.addComponent(date_rng, cyclic_period, season_type=data_type)
+                                    cyclic_component = CyclesComponent().addComponent(date_rng, cyclic_period, season_type=data_type)
 
                                     # cyclic_component = add_cycles(date_rng, cyclic_period, season_type=data_type)
 
@@ -105,8 +105,8 @@ def main():
                                     # Save the data to a CSV file
                                     df = pd.DataFrame({'value': data, 'timestamp': date_rng, 'anomaly': anomaly})
                                     # df.to_csv('sample_datasets/' + str(counter) + '.csv', encoding='utf-8', index=False)
-                                    fileName = 'sample_datasets/' + str(counter) + '.csv'
-                                    CVSProducer().saveData(df , fileName) 
+                                    fileName = str(counter) + '.csv'
+                                    CVSProducer().saveData(df , 'sample_datasets/' + fileName) 
                                     """s
                                     import matplotlib.pyplot as plt
                                     plt.figure(figsize=(10, 6))
@@ -124,7 +124,7 @@ def main():
                                     break
                                     """
 
-                                    meta_data.append({'id': str(counter) + '.csv',
+                                    meta_data.append({'id': fileName,
                                                       'data_type': data_type,
                                                       'daily_seasonality': daily_seasonality,
                                                       'weekly_seasonality': weekly_seasonality,
