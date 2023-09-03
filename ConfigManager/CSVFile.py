@@ -1,8 +1,5 @@
 
 
-
-
-
 from ConfigManager.File import File
 import pandas as pd
 
@@ -10,12 +7,14 @@ import pandas as pd
 class CSVFile(File):
     
     def __init__(self,name):
-        self.name = name
+        super().__init__(name)
         
-    def readConfig(self):
-        configs = pd.read_csv(self.name)
-        return configs
-    
+
+    def open(self):
+        pass
+
+    def read(self):
+        pass
     
 
 
