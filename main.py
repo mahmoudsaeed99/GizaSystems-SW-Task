@@ -20,7 +20,7 @@ from Components.NoiseComponent import *
 from Components.OutliersComponent import *
 from Components.SeasonalComponent import *
 from Components.TrendComponent import *
-from DataProducer.CVSProducer import*
+from DataProducer.CSVProducer import*
 
 random.seed(22)
 
@@ -138,7 +138,7 @@ def main():
                                     # generate_csv(list(zip(date_rng, data)), file_name)
 
     meta_data_df = pd.DataFrame.from_records(meta_data)
-    CVSProducer().saveData(meta_data_df , 'sample_datasets/meta_data.csv')
+    CSVProducer().saveData(meta_data_df , 'sample_datasets/meta_data.csv')
     # meta_data_df.to_csv('sample_datasets/meta_data.csv', encoding='utf-8', index=False)
 
 
