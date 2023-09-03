@@ -6,11 +6,9 @@ Created on Wed Aug 30 00:16:49 2023
 """
 
 from abc import ABC , abstractmethod
-
-class File(ABC):
-    
-    @abstractmethod
-    def readConfig(self):
-        pass
+from ConfigManager.Reader import *
+class File(Reader,ABC):
+    def __init__(self , fileName):
+        self.fileName = fileName
     
     
