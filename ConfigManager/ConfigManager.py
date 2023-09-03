@@ -5,12 +5,12 @@ Created on Tue Aug 29 22:59:15 2023
 @author: Mahmoud Saeed
 """
 
-from fileFactor import fileFactor
+from ReaderFactor import ReaderFactor
 
 
 class ConfigManager:
     
-    def readConfig(self, name ):
+    def readConfig(self, name , type_ ):
         """
        Read config from diff sources.
 
@@ -21,10 +21,10 @@ class ConfigManager:
            pandas.dataframe: the configs data.
        """
         try:
-            file = fileFactor().createFile(name)
+            file = ReaderFactor().createReader(name,type_)
         except:
             print("not supported file or no file in this destination")
-        configs = file.readConfig()
-        return configs
+        file.open()
+        return file
     
     

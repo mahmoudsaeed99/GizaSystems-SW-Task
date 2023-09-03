@@ -28,7 +28,8 @@ random.seed(22)
 def main():
     # Define simulation parameters
     #------------------new line-----------------
-    configData = ConfigManager().readConfig('xyz.csv')
+    configfile = ConfigManager().readConfig('xyz.csv' , 'csv')
+    configData = configfile.read()
     #------------------------------------------
     start_date = datetime(2021, 7, 1)
     frequencies = ["1D", "10T", "30T", "1H", "6H", "8H"]
