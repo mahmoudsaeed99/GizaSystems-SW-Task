@@ -19,5 +19,5 @@ from django.urls import path , include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('simulator_api.urls'))
+    path('simulate/',include('simulator_api.urls'))
 ]

@@ -7,6 +7,9 @@ from ..models import *
 from ..serializers import *
 from rest_framework import status
 import datetime
+from rest_framework.filters import SearchFilter
+
+
 class ComponentController(ListCreateAPIView ):
     """
         ComponentController Class inherit from ListCreateAPIView
@@ -14,6 +17,8 @@ class ComponentController(ListCreateAPIView ):
     """
     queryset = Component.objects.all()
     serializer_class = ComponentSerializer
+    filter_backends = (SearchFilter,)
+    search_fields = ('=dataconfigID',)
     def get(self, request, *args, **kwargs):
         data = self.list(request,*args, **kwargs).data
         return Response(data = data)
@@ -46,7 +51,12 @@ class ComponentController(ListCreateAPIView ):
             # configs =  self.create(dataConfig , 'custom', **kwargs )
         return serielizer.data
     
-
+    def get_data_component(self,data_id):
+        data = Component.objects.all().filter(dataconfigID =data_id).values()
+        data = {
+                'components': data,
+                }
+        return data
 
 
 
