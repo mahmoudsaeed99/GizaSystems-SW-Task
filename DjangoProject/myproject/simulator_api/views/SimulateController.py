@@ -11,6 +11,8 @@ from django.shortcuts import redirect
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
+from .BuildSimulator import BuildSimulator as BuildSimulator
+
 
 class SimulateController(ListCreateAPIView ):
     queryset = Simulator.objects.all()
@@ -48,11 +50,59 @@ class SimulateController(ListCreateAPIView ):
         configs = ConfigController().add(request.data['dataset'], items, **kwargs)
         return Response(simulate.data)
     
-    def update_status(self,simulator_id , newStatus):
+
+    def get_simulator(self,simulator_id):
+        data = Simulator.objects.all().filter(id =simulator_id).values()
+        data = {
+                'simulator': data,
+                }
+        return data
+    
+
+    @api_view(['GET'])
+    def runSimulator(request):
+        simulator_id = request.GET.get('simulator_id',-1)
+        
+        if simulator_id == -1 or simulator_id == "":
+            error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
+            return Response(error)
+        # self.as_view
+        # request = redirect('http://127.0.0.1:8000/simulate/?search='+simulator_id+'')
+        SimulateController().update_field(simulator_id ,"status" ,"Running")
+        # simulator = redirect('http://127.0.0.1:8000/simulate/?search='+simulator_id+'')
+        simulator = SimulateController().get_simulator(simulator_id)
+        # return Response(simulator['simulator'][0]['id'])
+        # dataConfigs = redirect('http://127.0.0.1:8000/simulate/configs/?search='+simulator_id+'')
+        # return dataConfigs
+        try:
+            BuildSimulator().buildSimulator(simulator_id,simulator['simulator'][0])
+        
+        except:
+            SimulateController().update_field(simulator_id ,"status" , "Failed")
+            return Response({'error':"failed to build simulator"})
+        
+        
+        
+        return Response({'message':"Built simulator: "+simulator_id+" successfully"})
+        # return simulator
+
+    
+    @api_view(['GET'])
+    def stopSimulator(request):
+        simulator_id = request.GET.get('simulator_id',-1)
+        
+        if simulator_id == -1 or simulator_id == "":
+            error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
+            return Response(error)
+        SimulateController().update_status(simulator_id , "Failed")
+        
+        return Response({'message':"Stop building simulator: "+simulator_id+" successfully"})
+        pass
+    def update_field(self,simulator_id , field , newfield):
         # simulatorSerializer = SimulateSerializer()
         try:
             simulator = Simulator.objects.get(pk = simulator_id)
-            simulator.status = newStatus
+            simulator.field = newfield
             simulator.save()
         except:
             raise Exception("Update Faild")
