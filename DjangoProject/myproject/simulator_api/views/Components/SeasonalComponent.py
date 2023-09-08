@@ -4,7 +4,7 @@ Created on Wed Aug 30 16:58:51 2023
 
 @author: Mahmoud Saeed
 """
-from Components.AdditionalComponent import *
+from .AdditionalComponent import *
 
 class SeasonalComponent(AdditionalComponent):
     

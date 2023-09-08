@@ -94,16 +94,21 @@ class SimulateController(ListCreateAPIView ):
         if simulator_id == -1 or simulator_id == "":
             error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
             return Response(error)
-        SimulateController().update_status(simulator_id , "Failed")
+        SimulateController().update_field(simulator_id, "status" , "Failed")
         
         return Response({'message':"Stop building simulator: "+simulator_id+" successfully"})
         pass
+
     def update_field(self,simulator_id , field , newfield):
         # simulatorSerializer = SimulateSerializer()
         try:
             simulator = Simulator.objects.get(pk = simulator_id)
-            simulator.field = newfield
+            if field == 'status':
+                simulator.status = newfield
+            elif field == 'metaData':
+                simulator.metaData = newfield
             simulator.save()
+            # print(simulator.objects.all().values())
         except:
             raise Exception("Update Faild")
         

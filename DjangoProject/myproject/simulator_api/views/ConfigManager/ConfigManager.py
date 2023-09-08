@@ -5,7 +5,7 @@ Created on Tue Aug 29 22:59:15 2023
 @author: Mahmoud Saeed
 """
 
-from ReaderFactor import ReaderFactor
+from .ReaderFactor import *
 
 
 class ConfigManager:

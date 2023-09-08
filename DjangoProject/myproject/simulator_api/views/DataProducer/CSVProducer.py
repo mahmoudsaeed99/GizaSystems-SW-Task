@@ -7,7 +7,7 @@ Created on Wed Aug 30 00:37:11 2023
 """
 
 
-from DataProducer.Producer import Producer
+from .Producer import Producer
 
 
 #class CVSProducer inherit from Producer 

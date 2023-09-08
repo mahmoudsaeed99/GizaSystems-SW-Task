@@ -5,7 +5,7 @@ Created on Wed Aug 30 00:38:06 2023
 @author: Mahmoud Saeed
 """
 
-from DataProducer.Producer import Producer
+from .Producer import Producer
 
 
 class JsonProducer(Producer):

@@ -1,6 +1,7 @@
 
 
-from ConfigManager.File import File
+from .File import *
+
 import pandas as pd
 
 

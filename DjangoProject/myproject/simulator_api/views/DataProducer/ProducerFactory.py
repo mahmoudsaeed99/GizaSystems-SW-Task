@@ -1,6 +1,6 @@
-from DataProducer.CSVProducer import *
-from DataProducer.JsonProducer import *
-from DataProducer.XMLProducer import *
+from .CSVProducer import *
+from .JsonProducer import *
+from .XMLProducer import *
 
 class ProducerFactory():
     

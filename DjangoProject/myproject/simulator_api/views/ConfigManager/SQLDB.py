@@ -1,4 +1,4 @@
-from ConfigManager.DB import *
+from .DB import *
 import pandas as pd
 
 

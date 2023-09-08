@@ -5,7 +5,7 @@ Created on Wed Aug 30 17:12:35 2023
 @author: Mahmoud Saeed
 """
 
-from Components.AdditionalComponent import *
+from .AdditionalComponent import *
 
 
 class CyclesComponent(AdditionalComponent):

@@ -5,9 +5,12 @@ Created on Tue Aug 29 23:00:51 2023
 @author: Mahmoud Saeed
 """
 # from  CSVFile import CSVFile
-from ConfigManager.CSVFile import CSVFile
-from ConfigManager.XMLFile import XMLFile
-from ConfigManager.SQLDB import *
+
+from .CSVFile import *
+from .XMLFile import *
+from .SQLDB import *
+
+
 
 # Class fileFactor help us to return the correct object of file that we want
 # to get the data like `csv`.....etc.
