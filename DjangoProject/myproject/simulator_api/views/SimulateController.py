@@ -1,4 +1,8 @@
 from django.shortcuts import render
+# import os
+# import sys
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+
 from .ConfigController import ConfigController
 from rest_framework.response import Response
 # Create your views here.
@@ -12,6 +16,9 @@ from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
 from .BuildSimulator import BuildSimulator as BuildSimulator
+
+
+
 
 
 class SimulateController(ListCreateAPIView ):
@@ -28,6 +35,10 @@ class SimulateController(ListCreateAPIView ):
 
     """
     def post(self, request, *args, **kwargs):
+        """
+           receive simulator data and pass each data to the specific model  
+        
+        """
         # newSimulate = self.create(request.data['startDate'] , *args, **kwargs )
 
         # Extract all data that related to simulator
@@ -52,6 +63,10 @@ class SimulateController(ListCreateAPIView ):
     
 
     def get_simulator(self,simulator_id):
+        """
+            return simulator using simulator_id
+        
+        """
         data = Simulator.objects.all().filter(id =simulator_id).values()
         data = {
                 'simulator': data,
@@ -61,6 +76,10 @@ class SimulateController(ListCreateAPIView ):
 
     @api_view(['GET'])
     def runSimulator(request):
+        """
+           Run simulator by recieve the simulator_id to run this simulator
+
+        """
         simulator_id = request.GET.get('simulator_id',-1)
         
         if simulator_id == -1 or simulator_id == "":
@@ -74,21 +93,27 @@ class SimulateController(ListCreateAPIView ):
         # return Response(simulator['simulator'][0]['id'])
         # dataConfigs = redirect('http://127.0.0.1:8000/simulate/configs/?search='+simulator_id+'')
         # return dataConfigs
+
+        # make exception handling to catch error
         try:
-            BuildSimulator().buildSimulator(simulator_id,simulator['simulator'][0])
-        
+            buildSimulator = BuildSimulator(simulator_id,simulator['simulator'][0])
+            print("1")
+            buildSimulator.start()
+            
         except:
             SimulateController().update_field(simulator_id ,"status" , "Failed")
             return Response({'error':"failed to build simulator"})
         
-        
-        
-        return Response({'message':"Built simulator: "+simulator_id+" successfully"})
+        return Response({'message':"Built simulator: "+simulator_id+" Running"})
         # return simulator
 
     
     @api_view(['GET'])
     def stopSimulator(request):
+        """
+          stop simulator using the id of specific simulator
+        
+        """
         simulator_id = request.GET.get('simulator_id',-1)
         
         if simulator_id == -1 or simulator_id == "":
@@ -96,10 +121,18 @@ class SimulateController(ListCreateAPIView ):
             return Response(error)
         SimulateController().update_field(simulator_id, "status" , "Failed")
         
-        return Response({'message':"Stop building simulator: "+simulator_id+" successfully"})
+        return Response({'message':"Stop building simulator: "+simulator_id+""})
         pass
 
     def update_field(self,simulator_id , field , newfield):
+
+        """
+          update specific simulator 
+          `simulator_id`(int): the simulator id the you want to update
+          `field`(string) : the field that you want to update
+          `newField`(string) : the new data , you want to pass to the field
+        
+        """
         # simulatorSerializer = SimulateSerializer()
         try:
             simulator = Simulator.objects.get(pk = simulator_id)
@@ -115,6 +148,9 @@ class SimulateController(ListCreateAPIView ):
         return
     
     def get_simulator_status(self,simulator_id):
+        """
+          return status of specific simulator
+        """
         simulator = Simulator.objects.get(pk = simulator_id)
         return simulator.status
 

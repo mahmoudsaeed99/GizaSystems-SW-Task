@@ -52,6 +52,10 @@ class ComponentController(ListCreateAPIView ):
         return serielizer.data
     
     def get_data_component(self,data_id):
+        """
+            return components for specific data configs
+        
+        """
         data = Component.objects.all().filter(dataconfigID =data_id).values()
         data = {
                 'components': data,

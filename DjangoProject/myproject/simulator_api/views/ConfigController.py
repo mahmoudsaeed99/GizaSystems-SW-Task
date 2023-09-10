@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from rest_framework.response import Response
 # Create your views here.
+
+
 from rest_framework.generics import ListAPIView , ListCreateAPIView 
 from ..models import *
 from ..serializers import *
@@ -26,6 +28,12 @@ class ConfigController(ListCreateAPIView ):
             simulatorData -> integer : simulator ID
      """
     def add(self,data , simulatorData,**kwargs ):
+        """
+         add data to Configs model
+         `data`(list<dict>): list of data configs dictionary
+         `simulatorData`(int): simulator id
+        
+        """
         configList = []
         dataConfig = {}
         for i in data:
@@ -41,7 +49,6 @@ class ConfigController(ListCreateAPIView ):
             
             # create object of ConfigSerializer
             serielizer = ConfigSerializer(data=dataConfig)
-            print(serielizer.is_valid())
             # check if the data are validate or not
             if serielizer.is_valid():
                 serielizer.save()
@@ -56,6 +63,10 @@ class ConfigController(ListCreateAPIView ):
         return serielizer.data
     
     def get_simulator_data(self,simulator_id):
+        """
+            return configs for specific simulator
+        
+        """
         data = DataConfig.objects.all().filter(simulaterID =simulator_id).values()
         data = {
                 'data': data,

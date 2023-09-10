@@ -23,24 +23,41 @@ from .Components.OutliersComponent import *
 from .Components.SeasonalComponent import *
 from .Components.TrendComponent import *
 from .DataProducer.ProducerFactory import *
+import threading 
 
-class BuildSimulator():
+import time
+
+
+
+
+class BuildSimulator(threading.Thread):
    
-    def buildSimulator(self,simulator_id,simulator):
+    def __init__(self,simulator_id,simulator):
+         self.simulator_id = simulator_id
+         self.simulator = simulator
+         threading.Thread.__init__(self)   
+
+
+    def run(self):
         from .SimulateController import SimulateController
         meta_data = []
         counter = 0
         
-        data = ConfigController().get_simulator_data(simulator_id)
-        while( SimulateController().get_simulator_status(simulator_id)== 'Running'):
+        data = ConfigController().get_simulator_data(self.simulator_id)
+        while( SimulateController().get_simulator_status(self.simulator_id)== 'Running'):
             # time_series_generate = TimeSeriesGeneration(simulator['start_date'] ,
             #                                              simulator['start_date'] + timedelta(days=simulator['dataSize']))  
             
+            if SimulateController().get_simulator_status(self.simulator_id) != 'Running':
+                raise Exception("stopped")
+
             for i in data['data']:
                 # date_rng = time_series_generate.generate(i['frequency'])
                 components = ComponentController().get_data_component(i['id'])
                 
                 for j in components['components']:
+                    # chekc threading with sleep() function
+                    time.sleep(20)
                     # seasonal_component = SeasonalComponent().add_daily(date_rng,
                     #                                                 j['frequency'],
                     #                                                 season_type=simulator['timeSeries_type'])  
@@ -77,14 +94,14 @@ class BuildSimulator():
                     #                   'dataConfig':i['id'],
                     #                   'components':j['id'],
                     #                  'fileName': fileName,})
-                    pass
+                    
                     
             # meta_data_df = pd.DataFrame.from_records(meta_data)
             # print(simulator['startDate'])
-            meta_data_name = 'sample_datasets/meta_data+'+simulator_id+'.csv'
+            meta_data_name = 'sample_datasets/meta_data+'+self.simulator_id+'.csv'
             # producer.saveData(meta_data_df , meta_data_name)
             print("enter22")
-            SimulateController().update_field(simulator_id ,"metaData" ,meta_data_name )  
-            SimulateController().update_field(simulator_id ,"status" , "Success")        
-            return  
+            SimulateController().update_field(self.simulator_id ,"metaData" ,meta_data_name )  
+            SimulateController().update_field(self.simulator_id ,"status" , "Success")      
+            return  Response({'message':"Stop building simulator: "+self.simulator_id+" successfully"})
         
