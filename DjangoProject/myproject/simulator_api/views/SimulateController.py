@@ -42,7 +42,7 @@ class SimulateController(ListCreateAPIView ):
         # newSimulate = self.create(request.data['startDate'] , *args, **kwargs )
 
         # Extract all data that related to simulator
-        simulate = {'data':{'startDate':request.data['startDate'],
+        simulate = {"data":{'startDate':request.data['startDate'],
                             'name':request.data['name'],
                             'timeSeries_type':request.data['timeSeries_type'],
                             'producer_type':request.data['producer_type'],
@@ -67,7 +67,7 @@ class SimulateController(ListCreateAPIView ):
             return simulator using simulator_id
         
         """
-        data = Simulator.objects.all().filter(process_id =simulator_id).values()
+        data = Simulator.objects.all().filter(id =simulator_id).values()
         data = {
                 'simulator': data,
                 }
@@ -80,31 +80,31 @@ class SimulateController(ListCreateAPIView ):
            Run simulator by recieve the simulator_id to run this simulator
 
         """
-        process_id = request.GET.get('simulator_id',-1)
+        simulator_id = request.GET.get('simulator_id',-1)
         
-        if process_id == -1 or process_id == "":
+        if simulator_id == -1 or simulator_id == "":
             error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
             return Response(error)
         # self.as_view
         # request = redirect('http://127.0.0.1:8000/simulate/?search='+simulator_id+'')
-        SimulateController().update_field(process_id ,"status" ,"Running")
+        SimulateController().update_field(simulator_id ,"status" ,"Running")
         # simulator = redirect('http://127.0.0.1:8000/simulate/?search='+simulator_id+'')
-        simulator = SimulateController().get_simulator(process_id)
+        simulator = SimulateController().get_simulator(simulator_id)
         # return Response(simulator['simulator'][0]['id'])
         # dataConfigs = redirect('http://127.0.0.1:8000/simulate/configs/?search='+simulator_id+'')
         # return dataConfigs
 
         # make exception handling to catch error
         try:
-            buildSimulator = BuildSimulator(process_id,simulator['simulator'][0])
+            buildSimulator = BuildSimulator(simulator_id,simulator['simulator'][0])
             print("1")
             buildSimulator.start()
             
         except:
-            SimulateController().update_status(process_id ,"Failed")
+            SimulateController().update_status(simulator_id ,"Failed")
             return Response({'error':"failed to build simulator"})
         
-        return Response({'message':"Built simulator: "+process_id+" Running"})
+        return Response({'message':"Built simulator: "+simulator_id+" Running"})
         # return simulator
 
     
@@ -114,19 +114,19 @@ class SimulateController(ListCreateAPIView ):
           stop simulator using the id of specific simulator
         
         """
-        process_id = request.GET.get('simulator_id',-1)
+        simulator_id = request.GET.get('simulator_id',-1)
         
-        if process_id == -1 or process_id == "":
+        if simulator_id == -1 or simulator_id == "":
             error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
             return Response(error)
-        SimulateController().update_status(process_id, "Failed")
+        SimulateController().update_status(simulator_id, "Failed")
         
-        return Response({'message':"Stop building simulator: "+process_id+""})
+        return Response({'message':"Stop building simulator: "+simulator_id+""})
         pass
     
-    def update_status(self,process_id , newField):
+    def update_status(self,simulator_id , newField):
         try:
-            simulator = Simulator.objects.get(process_id = process_id)
+            simulator = Simulator.objects.get(id = simulator_id)
             simulator.status = newField
             simulator.save()
         except:
@@ -134,7 +134,7 @@ class SimulateController(ListCreateAPIView ):
         
         return
         
-    def update_meta(self,process_id , newfield):
+    def update_meta(self,simulator_id , newfield):
 
         """
           update specific simulator 
@@ -145,7 +145,7 @@ class SimulateController(ListCreateAPIView ):
         """
         # simulatorSerializer = SimulateSerializer()
         try:
-            simulator = Simulator.objects.get(process_id = process_id)
+            simulator = Simulator.objects.get(id = simulator_id)
             simulator.metaData = newfield
             simulator.save()
             # print(simulator.objects.all().values())

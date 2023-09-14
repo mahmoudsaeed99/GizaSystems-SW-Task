@@ -14,7 +14,7 @@ class Simulator(models.Model):
     timeSeries_type = models.CharField(max_length=25 ,choices=timeSeries_CHOICES , default="additive")
     metaData = models.CharField(max_length=50 , default='' )
     producer_type = models.CharField(max_length=25, blank=False)
-    process_id = models.IntegerField(unique=True , auto_created=True)
+    process_id = models.IntegerField(null=True)
     status = models.CharField(max_length=25,default='Added')
     
 

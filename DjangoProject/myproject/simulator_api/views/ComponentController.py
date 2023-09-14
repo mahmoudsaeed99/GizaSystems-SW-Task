@@ -31,7 +31,6 @@ class ComponentController(ListCreateAPIView ):
         """
         componentList = []
         components = {}
-        print(data)
         for i in data:
             components = {'frequency':i['frequency'],
                             'multiplier':i['multiplier'],
@@ -42,7 +41,6 @@ class ComponentController(ListCreateAPIView ):
             # create object of ComponentSerializer
             serielizer = ComponentSerializer(data=components)
 
-            print(serielizer.is_valid())
             # check if the data are validate or not
             if serielizer.is_valid():
                 serielizer.save()
