@@ -32,7 +32,7 @@ class DataConfig(models.Model):
 ]
     cycle_amplitude = models.IntegerField(choices=timeSeries_CHOICES)
     cycle_frequency = models.IntegerField()
-    simulaterID = models.ForeignKey(Simulator , on_delete=models.CASCADE)
+    simulater = models.ForeignKey(Simulator , on_delete=models.CASCADE)
 
 
 class Component(models.Model):
@@ -45,7 +45,7 @@ class Component(models.Model):
     ]
     frequency = models.CharField(max_length=10 , choices=frequencyType , default="Daily")
     multiplier = models.IntegerField(default=0)
-    dataconfigID = models.ForeignKey(DataConfig , on_delete=models.CASCADE )
+    dataconfig = models.ForeignKey(DataConfig , on_delete=models.CASCADE )
 
 
 

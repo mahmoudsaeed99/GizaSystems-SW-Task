@@ -36,7 +36,7 @@ class ComponentController(ListCreateAPIView ):
                             'multiplier':i['multiplier'],
                             'phase_shift':i['phase_shift'],
                             'amplitude':i['amplitude'],
-                            'dataconfigID':item,
+                            'dataconfig':item,
                             }
             # create object of ComponentSerializer
             serielizer = ComponentSerializer(data=components)

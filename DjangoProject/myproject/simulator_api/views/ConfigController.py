@@ -44,7 +44,7 @@ class ConfigController(ListCreateAPIView ):
                             'outlierPercent':i['outlier_percentage'],
                             'cycle_amplitude':i['cycle_amplitude'],
                             'cycle_frequency':i['cycle_frequency'],
-                            'simulaterID':simulatorData,
+                            'simulater':simulatorData,
                             }
             
             # create object of ConfigSerializer

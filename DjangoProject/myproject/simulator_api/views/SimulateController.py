@@ -17,15 +17,17 @@ from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
 from .BuildSimulator import BuildSimulator as BuildSimulator
 
+from .ConfigManager.SQLDB import *
+import threading
 
-
-
+threads = {}
 
 class SimulateController(ListCreateAPIView ):
     queryset = Simulator.objects.all()
     serializer_class = SimulateSerializer
     filter_backends = (SearchFilter,)
     search_fields = ('=id',)
+
     def get(self, request, *args, **kwargs):
         data = self.list(request,*args, **kwargs).data
         return Response(data = data)
@@ -60,19 +62,17 @@ class SimulateController(ListCreateAPIView ):
         items = simulate.data['id']
         configs = ConfigController().add(request.data['dataset'], items, **kwargs)
         return Response(simulate.data)
-    
+
 
     def get_simulator(self,simulator_id):
         """
             return simulator using simulator_id
-        
+
         """
-        data = Simulator.objects.all().filter(id =simulator_id).values()
-        data = {
-                'simulator': data,
-                }
-        return data
-    
+        config = SQLDB()
+        simulatorConfigs = config.read(simulator_id)
+        return simulatorConfigs
+
 
     @api_view(['GET'])
     def runSimulator(request):
@@ -85,26 +85,23 @@ class SimulateController(ListCreateAPIView ):
         if simulator_id == -1 or simulator_id == "":
             error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
             return Response(error)
-        # self.as_view
-        # request = redirect('http://127.0.0.1:8000/simulate/?search='+simulator_id+'')
-        SimulateController().update_field(simulator_id ,"status" ,"Running")
-        # simulator = redirect('http://127.0.0.1:8000/simulate/?search='+simulator_id+'')
-        simulator = SimulateController().get_simulator(simulator_id)
-        # return Response(simulator['simulator'][0]['id'])
-        # dataConfigs = redirect('http://127.0.0.1:8000/simulate/configs/?search='+simulator_id+'')
-        # return dataConfigs
 
+        SimulateController().update_status(simulator_id ,"Running")
+        config = SQLDB()
+        simulatorConfigs = config.read(simulator_id)
         # make exception handling to catch error
         try:
-            buildSimulator = BuildSimulator(simulator_id,simulator['simulator'][0])
-            print("1")
+            buildSimulator = BuildSimulator(simulatorConfigs)
             buildSimulator.start()
+            id_ = buildSimulator.ident
+            threads[id_] = buildSimulator
+            SimulateController().update_proccess(simulator_id, id_)
             
         except:
             SimulateController().update_status(simulator_id ,"Failed")
             return Response({'error':"failed to build simulator"})
         
-        return Response({'message':"Built simulator: "+simulator_id+" Running"})
+        return Response({'message':"Built simulator: "+str(simulator_id)+" Running in process id : "+str(id_)+""})
         # return simulator
 
     
@@ -114,16 +111,22 @@ class SimulateController(ListCreateAPIView ):
           stop simulator using the id of specific simulator
         
         """
-        simulator_id = request.GET.get('simulator_id',-1)
-        
-        if simulator_id == -1 or simulator_id == "":
+        process_id = request.GET.get('process_id',-1)
+        if process_id == -1 or process_id == "":
             error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
             return Response(error)
-        SimulateController().update_status(simulator_id, "Failed")
-        
-        return Response({'message':"Stop building simulator: "+simulator_id+""})
-        pass
-    
+        simulator = Simulator.objects.get( process_id = process_id)
+        print(threads)
+        try:
+            thread = threads.get(process_id)
+            thread.stop()
+        except:
+            return Response({'message':"Stop building simulator: "+str(simulator.id)+" un-successfully"})
+
+        SimulateController().update_proccess(simulator.id , 0)
+
+        return Response({'message':"Stop building simulator: "+str(simulator.id)+""})
+
     def update_status(self,simulator_id , newField):
         try:
             simulator = Simulator.objects.get(id = simulator_id)
@@ -133,7 +136,16 @@ class SimulateController(ListCreateAPIView ):
             raise Exception("Update Faild")
         
         return
-        
+    def update_proccess(self,simulator_id , newField):
+        try:
+            simulator = Simulator.objects.get(id = simulator_id)
+            simulator.process_id = newField
+            simulator.save()
+        except:
+            raise Exception("Update Faild")
+
+        return
+
     def update_meta(self,simulator_id , newfield):
 
         """
