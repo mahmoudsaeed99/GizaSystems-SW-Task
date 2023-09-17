@@ -11,7 +11,7 @@ from .AdditionalComponent import *
 class CyclesComponent(AdditionalComponent):
     
     
-    def addComponent(data, cyclic_periods, season_type):
+    def addComponent(data, cyclic_period, amplitude , data_size):
         """
         Add cyclic component to the time series data.
 
@@ -22,10 +22,10 @@ class CyclesComponent(AdditionalComponent):
         Returns:
             numpy.ndarray: The cyclic component of the time series.
         """
-        if cyclic_periods == "exist":  # Quarterly
-            cycle_component = 1 if season_type == 'multiplicative' else 0
-            cycle_component += np.sin(2 * np.pi * (data.quarter-1) / 4)
-        else:  # No Cyclic Periods
-            cycle_component = 0 if season_type == 'additive' else 1
 
-        return cycle_component
+        return amplitude * np.sin(2 * np.pi * data_size.year / cyclic_period)
+            # cycle_component += np.sin(2 * np.pi * (data.quarter-1) / 4)/
+        # else:  # No Cyclic Periods
+        #     cycle_component = 0 if season_type == 'additive' else 1
+        #
+        # return cycle_component

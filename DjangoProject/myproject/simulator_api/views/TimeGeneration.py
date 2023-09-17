@@ -7,7 +7,7 @@ class TimeSeriesGeneration():
         self.end_date = end_date
 
 
-    def generate(self , freq):
+    def generate(self ,freq):
         """
         Generate a time index (DatetimeIndex) with the specified frequency.
 
@@ -19,8 +19,8 @@ class TimeSeriesGeneration():
         Returns:
             DatetimeIndex: The generated time index.
         """
-        date_rng = pd.date_range(start=self.start_date, end=self.end_date,
-                                  freq=freq)
+        return pd.date_range(start=self.start_date, end=self.end_date,
+                             freq=freq)
         return date_rng
 
 

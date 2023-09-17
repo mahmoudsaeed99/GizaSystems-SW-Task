@@ -10,7 +10,7 @@ from .AdditionalComponent import *
 class TrendComponent(AdditionalComponent):
     
     
-    def addComponent(data, trend, data_size, data_type):
+    def addComponent(self , data, trend_coef,):
         """
         Add trend component to the time series data.
 
@@ -21,11 +21,11 @@ class TrendComponent(AdditionalComponent):
         Returns:
             numpy.ndarray: The trend component of the time series.
         """
-        if trend == "exist":
-            slope = random.choice([1, -1])
-            trend_component = np.linspace(0, data_size / 30 * slope, len(data)) if slope == 1 else np.linspace(
-                -1 * data_size / 30, 0, len(data))
-        else:  # No Trend
-            trend_component = np.zeros(len(data)) if data_type == 'additive' else np.ones(len(data))
+        if len(trend_coef) == 0:
+            return np.zeros(len(data))
+        trend = 0
+        for i, coefficient in enumerate(trend_coef):
+            time_intervals = np.arange(len(data))
+            trend += coefficient * time_intervals ** i
 
-        return pd.Series(trend_component)
+        return trend

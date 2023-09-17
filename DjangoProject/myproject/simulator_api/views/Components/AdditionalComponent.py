@@ -13,8 +13,6 @@ from datetime import datetime, timedelta
 
 
 class AdditionalComponent(ABC):
-        
-    @abstractmethod
-    def addComponent(self,data):
+
+    def addComponent(self):
         pass
-    

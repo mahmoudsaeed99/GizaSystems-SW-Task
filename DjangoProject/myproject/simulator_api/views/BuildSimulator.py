@@ -43,8 +43,12 @@ class BuildSimulator(threading.Thread):
         meta_data = []
         counter = 0
 
-        time_series_generate = TimeSeriesGeneration(self.simulator['start_date'] ,
-                                                         self.simulator['start_date'] + timedelta(days=self.simulator['dataSize']))
+        if self.simulatorConfigs['endDate'] == '':
+            endDate = self.simulatorConfigs['startDate'] + timedelta(days=self.simulatorConfigs['dataSize'])
+        else:
+            endDate = self.simulatorConfigs['endDate']
+
+        time_series_generate = TimeSeriesGeneration(self.simulatorConfigs['startDate'] ,endDate)
 
         # time.sleep(20)
         for i in self.simulatorConfigs['dataset']:
@@ -53,16 +57,15 @@ class BuildSimulator(threading.Thread):
             for j in i['components']:
                 # check threading with sleep() function
 
-                seasonal_component = SeasonalComponent().add_daily(date_rng,
-                                                                    j['frequency'],
-                                                                    season_type=self.simulatorConfigs['timeSeries_type'])
+                seasonal_component = SeasonalComponent().add_component(date_rng,j['multiplier'],
+                                                                    j['frequency'],j['amplitude'],j['phase_shift'],
+                                                                    self.simulatorConfigs['timeSeries_type'])
 
                 trend = [int(i) for i in i['trendCoef'].split()]
-                trend_component = TrendComponent().addComponent(date_rng, trend, data_size=self.simulatorConfigs['dataSize'],
-                                    data_type=self.simulatorConfigs['timeSeries_type'])
+                trend_component = TrendComponent().addComponent(date_rng, trend)
 
-                cyclic_component = CyclesComponent().addComponent(date_rng, i['cycle_frequency'],
-                                                                       season_type=self.simulatorConfigs['dataSize'])
+                cyclic_component = CyclesComponent().addComponent( i['cycle_frequency'],i['cycle_amplitude'],
+                                                                       date_rng)
 
                 if self.simulatorConfigs['dataSize'] == 'multiplicative':
                     data = seasonal_component *  trend_component * cyclic_component
@@ -83,7 +86,7 @@ class BuildSimulator(threading.Thread):
                 # producer = ProducerFactory().createProducer(fileName , 'csv')
                 # df.to_csv('sample_datasets/' + str(counter) + '.csv', encoding='utf-8', index=False)
                 counter +=1
-                fileName = i['id']+"_"+j['id'] + '.csv'
+                fileName = "E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/dataSet/"+str(i['id'])+"_"+str(j['id']) + '.csv'
                 producer = ProducerFactory().createProducer(fileName , 'csv')
                 producer.saveData(df,fileName)
                 meta_data.append({'simulator':self.simulatorConfigs['id'],
@@ -94,7 +97,7 @@ class BuildSimulator(threading.Thread):
 
         meta_data_df = pd.DataFrame.from_records(meta_data)
         # print(simulator['startDate'])
-        meta_data_name = 'sample_datasets/meta_data+'+self.simulatorConfigs['id']+'.csv'
+        meta_data_name = 'E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/metaData/+'+str(self.simulatorConfigs['id'])+'.csv'
         producer.saveData(meta_data_df , meta_data_name)
         SimulateController().update_meta(self.simulatorConfigs['id']  ,meta_data_name )
         SimulateController().update_proccess(self.simulatorConfigs['id'] , 0)

@@ -20,16 +20,31 @@ class NoiseComponent(AdditionalComponent):
         Returns:
             numpy.ndarray: The noise component of the time series.
         """
-        if noise_level == "small":
-            noise_level = 0.1
-            # noise = np.random.normal(0, 0.05, len(data))
-        elif noise_level == "large":
-            noise_level = 0.3
-            # noise = np.random.normal(0, 0.1, len(data))
-        else:  # No Noise
-            noise_level = 0
+        signal_power = np.var(data)
 
-        noise = np.zeros_like(data)
-        for i in range(len(data)):
-            noise[i] = np.random.normal(0, abs(data[i]) * noise_level) if noise_level > 0 else 0
-        return pd.Series((data + noise)[:, 0])
+        # Step 2: Determine the Desired SNR (in dB)
+        desired_snr_db = noise_level  # Desired SNR in dB
+
+        # Step 3: Calculate the Noise Power (in dB and linear scale)
+        noise_power_db = signal_power - desired_snr_db
+
+        noise_power = 10 ** (noise_power_db / 10)
+
+        # Step 4: Generate Noise with the Calculated Power
+        noise_stddev = np.sqrt(noise_power)
+        noise = np.random.normal(0, noise_stddev, len(data))
+
+        return noise
+        # if noise_level == "small":
+        #     noise_level = 0.1
+        #     # noise = np.random.normal(0, 0.05, len(data))
+        # elif noise_level == "large":
+        #     noise_level = 0.3
+        #     # noise = np.random.normal(0, 0.1, len(data))
+        # else:  # No Noise
+        #     noise_level = 0
+        #
+        # noise = np.zeros_like(data)
+        # for i in range(len(data)):
+        #     noise[i] = np.random.normal(0, abs(data[i]) * noise_level) if noise_level > 0 else 0
+        # return pd.Series((data + noise)[:, 0])

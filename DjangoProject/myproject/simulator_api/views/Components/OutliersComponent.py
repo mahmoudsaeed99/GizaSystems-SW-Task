@@ -21,6 +21,7 @@ class OutliersComponent(AdditionalComponent):
             numpy.ndarray: The time series data with outliers.
         """
         # data = pd.Series(data)
+        percentage_outliers = percentage_outliers/100
         num_outliers = int(len(data) * percentage_outliers)
         outlier_indices = np.random.choice(len(data), num_outliers, replace=False)
         # data_with_outliers = pd.Series(data.copy())
