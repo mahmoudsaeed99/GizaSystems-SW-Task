@@ -1,5 +1,5 @@
 from rest_framework.test import  APITestCase , APIRequestFactory
-from .views.ComponentController import ComponentController
+from simulator_api.views.ComponentController import ComponentController
 from django.urls import reverse
 from django.shortcuts import redirect , render
 from rest_framework import status

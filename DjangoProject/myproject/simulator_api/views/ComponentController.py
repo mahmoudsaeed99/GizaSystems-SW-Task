@@ -1,12 +1,7 @@
-from django.shortcuts import render
-from django.urls import reverse
 from rest_framework.response import Response
 # Create your views here.
-from rest_framework.generics import ListAPIView , ListCreateAPIView 
-from ..models import *
-from ..serializers import *
-from rest_framework import status
-import datetime
+from rest_framework.generics import ListCreateAPIView
+from simulator_api.serializers.ComponentSerializer import *
 from rest_framework.filters import SearchFilter
 
 

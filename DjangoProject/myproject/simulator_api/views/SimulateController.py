@@ -1,4 +1,3 @@
-from django.shortcuts import render
 # import os
 # import sys
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
@@ -6,19 +5,15 @@ from django.shortcuts import render
 from .ConfigController import ConfigController
 from rest_framework.response import Response
 # Create your views here.
-from rest_framework.generics import ListAPIView , ListCreateAPIView 
-from ..models import *
-from ..serializers import *
-from rest_framework import status
-import datetime
-from django.shortcuts import redirect
-from rest_framework.reverse import reverse
+from rest_framework.generics import ListCreateAPIView
+from ..serializers.SimulatorSerializers import *
+
+from simulator_api.serializers.SimulatorSerializers import *
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
 from .BuildSimulator import BuildSimulator as BuildSimulator
 
 from .ConfigManager.SQLDB import *
-import threading
 
 threads = {}
 
@@ -27,52 +22,6 @@ class SimulateController(ListCreateAPIView ):
     serializer_class = SimulateSerializer
     filter_backends = (SearchFilter,)
     search_fields = ('=id',)
-
-    def get(self, request, *args, **kwargs):
-        data = self.list(request,*args, **kwargs).data
-        return Response(data = data)
-    
-    """
-        post function (override) : make this function to get only simulator data from request
-
-    """
-    def post(self, request, *args, **kwargs):
-        """
-           receive simulator data and pass each data to the specific model  
-        
-        """
-        # newSimulate = self.create(request.data['startDate'] , *args, **kwargs )
-
-        # Extract all data that related to simulator
-        simulate = {"data":{'startDate':request.data['startDate'],
-                            'name':request.data['name'],
-                            'timeSeries_type':request.data['timeSeries_type'],
-                            'producer_type':request.data['producer_type'],
-                            }}
-
-        simkeys = request.data.keys()
-        
-        # Check which attributes that the user add in the request
-        if 'endDate' in simkeys:
-            simulate['data']['endDate'] = request.data['endDate']
-        else:
-              simulate['data']['dataSize'] = request.data['dataSize']  
-        
-        simulate =  self.create(simulate , 'custom', **kwargs )
-        items = simulate.data['id']
-        configs = ConfigController().add(request.data['dataset'], items, **kwargs)
-        return Response(simulate.data)
-
-
-    def get_simulator(self,simulator_id):
-        """
-            return simulator using simulator_id
-
-        """
-        config = SQLDB()
-        simulatorConfigs = config.read(simulator_id)
-        return simulatorConfigs
-
 
     @api_view(['GET'])
     def runSimulator(request):

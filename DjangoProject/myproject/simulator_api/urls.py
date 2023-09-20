@@ -2,6 +2,7 @@ from django.urls import path
 from .views.SimulateController import *
 from .views.ConfigController import *
 from .views.ComponentController import *
+
 from .views.BuildSimulator import *
 urlpatterns = [
     path('', SimulateController.as_view(), name='simulate'),

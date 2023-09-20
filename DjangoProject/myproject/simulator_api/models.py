@@ -11,9 +11,14 @@ class Simulator(models.Model):
     ("multiplicative", "multiplicative"),
     ("additive", "additive"),
 ]
+    producer_CHOICES = [
+    ("csv", "csv"),
+    ("xml", "xsml"),
+    ("sql","sql")
+]
     timeSeries_type = models.CharField(max_length=25 ,choices=timeSeries_CHOICES , default="additive")
     metaData = models.CharField(max_length=50 , default='' )
-    producer_type = models.CharField(max_length=25, blank=False)
+    producer_type = models.CharField(max_length=25,choices=producer_CHOICES )
     process_id = models.IntegerField(null=True)
     status = models.CharField(max_length=25,default='Added')
     
@@ -32,7 +37,7 @@ class DataConfig(models.Model):
 ]
     cycle_amplitude = models.IntegerField(choices=timeSeries_CHOICES)
     cycle_frequency = models.IntegerField()
-    simulater = models.ForeignKey(Simulator , on_delete=models.CASCADE)
+    simulater = models.ForeignKey(Simulator , on_delete=models.CASCADE , related_name='dataConfig')
 
 
 class Component(models.Model):
@@ -45,7 +50,7 @@ class Component(models.Model):
     ]
     frequency = models.CharField(max_length=10 , choices=frequencyType , default="Daily")
     multiplier = models.IntegerField(default=0)
-    dataconfig = models.ForeignKey(DataConfig , on_delete=models.CASCADE )
+    dataconfig = models.ForeignKey(DataConfig , on_delete=models.CASCADE , related_name='components')
 
 
 

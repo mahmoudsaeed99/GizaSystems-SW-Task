@@ -1,20 +1,9 @@
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.shortcuts import redirect
-from ..serializers import *
-from ..models import *
-from django.http import JsonResponse
-from .ConfigController import ConfigController
 from .ComponentController import *
 
 from sklearn.preprocessing import MinMaxScaler
 
-
-from datetime import datetime, timedelta
 from .TimeGeneration import TimeSeriesGeneration
 # from .ConfigManager.ConfigManager import *
-from .ConfigManager.ConfigManager import *
 # import Components.AdditionalComponent
 from .Components.CyclesComponent import *
 from .Components.MissingValuesComponent import *
@@ -23,11 +12,7 @@ from .Components.OutliersComponent import *
 from .Components.SeasonalComponent import *
 from .Components.TrendComponent import *
 from .DataProducer.ProducerFactory import *
-import threading 
-
-import time
-
-
+import threading
 
 
 class BuildSimulator(threading.Thread):

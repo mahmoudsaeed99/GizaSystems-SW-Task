@@ -12,11 +12,11 @@ class SQLDB(DB):
 
     def read(self , Id):
         simulator = Simulator.objects.all().filter(id =Id)[0]
-        configs = simulator.dataconfig_set.all()
+        configs = simulator.dataConfig.all()
         simulator = Simulator.objects.all().filter(id =Id).values()[0]
         dataset = []
         for i in range(len(configs)):
-            component = configs[i].component_set.all().values()
+            component = configs[i].components.all().values()
             data = configs.values()[i]
             data['components'] = component
             dataset.append(data)
