@@ -1,0 +1,385 @@
+-- ALTER USER hr IDE-- NTIFIED BY hr account unlock;
+-- CREATE USER infa IDENTIFIED BY infa;
+-- CREATE USER core IDENTIFIED BY core;
+-- GRANT CONNECT , resource TO core
+-- GRANT dbo TO infa;
+
+/* 
+ * 	create table for row transaction
+ * 
+ * */
+
+CREATE TABLE CORE.sales_transaction (
+  ORDERNUMBER numeric,
+  QUANTITYORDERED numeric,
+  PRICEEACH numeric,
+  ORDERLINENUMBER numeric,
+  SALES numeric,
+  ORDERDATE DATE,
+  STATUS VARCHAR(50),
+  QTR_ID numeric,
+  MONTH_ID numeric,
+  YEAR_ID numeric,
+  PRODUCTLINE VARCHAR(50),
+  MSRP numeric,
+  PRODUCTCODE VARCHAR(50),
+  CUSTOMERNAME VARCHAR(100),
+  PHONE VARCHAR(20),
+  ADDRESSLINE1 VARCHAR(100),
+  ADDRESSLINE2 VARCHAR(100),
+  CITY VARCHAR(100),
+  STATE VARCHAR(50),
+  POSTALCODE VARCHAR(20),
+  COUNTRY VARCHAR(50),
+  TERRITORY VARCHAR(50),
+  CONTACTLASTNAME VARCHAR(50),
+  CONTACTFIRSTNAME VARCHAR(50),
+  DEALSIZE VARCHAR(50)
+);
+
+-- DROP TABLE CORE.sales_transaction
+-- TRUNCATE TABLE core.SALES_TRANSACTION 
+SELECT count(*) + 1 AS row_count FROM CORE.SALES_TRANSACTION st ;
+
+SELECT * FROM core.SALES_TRANSACTION st ;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+/*
+ * 	Create table address 
+ *  with column 
+		    ADDRESSLINE1	
+			ADDRESSLINE2	
+			CITY	
+			STATE	
+			POSTALCODE	
+			COUNTRY	
+ * 
+ * */
+CREATE  TABLE core.address (
+	address_id number NOT NULL,
+    PRIMARY KEY (address_id),
+	ADDRESSLINE1 varchar(100),
+  	ADDRESSLINE2 varchar(100),
+  	city  VARCHAR(100),
+  	state	varchar(50),
+	postalcode varchar(20),	
+	country varchar(50),
+   CUSTOMERNAME varchar(100)
+);
+
+CREATE SEQUENCE core.address_id_seq
+
+-- create trigger for this sequence
+
+CREATE OR REPLACE TRIGGER CORE.address_bi
+BEFORE INSERT ON CORE.address 
+FOR EACH ROW
+BEGIN
+  SELECT address_id_seq.nextval
+  INTO :new.address_id
+  FROM dual;
+END;
+
+INSERT INTO core.address ( ADDRESSLINE1, ADDRESSLINE2, city , state , postalcode , country , customername)  
+	SELECT distinct ADDRESSLINE1 ,ADDRESSLINE2, city,state,postalcode ,country ,CUSTOMERNAME  
+    FROM core.SALES_TRANSACTION;
+    
+
+select * from core.address;    
+
+-------------------------------------------------------------------------------------------------------------------------
+/*
+ * 	Create table Customer 
+ *  with column 
+		    CUSTOMERNAME	
+			PHONE	
+			TERRITORY	
+			CONTACTLASTNAME	
+			CONTACTFIRSTNAME	
+			DEALSIZE
+ * */
+
+DROP TABLE core.customer;
+CREATE  TABLE core.customer (
+	customer_id number primary KEY NOT NULL,
+	CUSTOMERNAME varchar(100),
+  	PHONE varchar(20),
+  	TERRITORY  VARCHAR(50),
+  	CONTACTLASTNAME	varchar(50),
+	CONTACTFIRSTNAME varchar(50),	
+	DEALSIZE varchar(50)
+);
+
+
+-- add foreign key for customer 
+-- ALTER TABLE CORE.customer
+-- ADD (address_id numeric,
+--     CONSTRAINT fk_address_id
+--     FOREIGN KEY (address_id)
+--     REFERENCES core.address(address_id)
+-- );
+
+-- DROP CONSTRAINTS IF YOU NEED
+-- ALTER TABLE CORE.CUSTOMER DROP CONSTRAINT fk_product_id
+
+-- invistigate 
+SELECT COUNT(*) FROM (SELECT DISTINCT CUSTOMERNAME ,PHONE,TERRITORY,CONTACTFIRSTNAME,CONTACTLASTNAME ,DEALSIZE   FROM core.SALES_TRANSACTION);
+
+
+-- create sequence 
+-- DROP sequence core.customer_id_seq
+CREATE SEQUENCE core.customer_id_seq
+
+-- create trigger for this sequence
+
+CREATE OR REPLACE TRIGGER CORE.customer_bi
+BEFORE INSERT ON CORE.CUSTOMER 
+FOR EACH ROW
+BEGIN
+  SELECT customer_id_seq.nextval
+  INTO :new.customer_id
+  FROM dual;
+END;
+
+INSERT INTO core.customer ( CUSTOMERNAME, PHONE, TERRITORY , CONTACTFIRSTNAME , CONTACTLASTNAME , DEALSIZE )  
+	SELECT DISTINCT CUSTOMERNAME ,PHONE, TERRITORY,CONTACTFIRSTNAME,CONTACTLASTNAME ,DEALSIZE    
+    FROM core.SALES_TRANSACTION ;
+	
+	
+-- analysis 
+SELECT count(*) FROM core.customer;
+SELECT * FROM core.customer;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+/*
+ * 	Create table product 
+ *  with column 
+		    PRODUCTLINE
+			PRODUCTCODE
+			MSRP
+ * 
+ * */
+
+-- create sequence 
+DROP SEQUENCE core.product_id_seq;
+
+
+-- DROP TABLE CORE.product;
+CREATE TABLE CORE.product (
+	product_id number primary key ,
+	PRODUCTLINE varchar(50),
+  	PRODUCTCODE varchar(20),
+  	MSRP numeric
+);
+
+CREATE SEQUENCE core.product_id_seq;
+
+-- create trigger for this sequence
+
+CREATE OR REPLACE TRIGGER CORE.product_bi
+BEFORE INSERT ON CORE.product
+FOR EACH ROW
+BEGIN
+  SELECT product_id_seq.nextval
+  INTO :new.product_id
+  FROM dual;
+END;
+
+-- ADD foreign column to another table 
+
+-- ALTER TABLE CORE.product
+-- ADD (customer_id numeric,
+--      CONSTRAINT fk_customer_id
+--      FOREIGN KEY (customer_id)
+--      REFERENCES core.customer(customer_id)
+-- );
+
+-- ALTER TABLE CORE.product DROP CONSTRAINT fk_customer_id;
+
+
+-- insert product data into table 
+
+INSERT INTO core.PRODUCT ( PRODUCTLINE, PRODUCTCODE, MSRP)  SELECT DISTINCT   PRODUCTLINE , PRODUCTCODE , MSRP FROM CORE.SALES_TRANSACTION;
+
+SELECT * FROM core.PRODUCT ;
+
+
+
+-------------------------------------------------------------------------------------------------------------------------
+/*
+ * 	Create table Has_product   [Bridge]
+ *  with column 
+		    product_id 	
+			customer_id 	
+			
+ * 
+ * */
+
+-- DROP TABLE core.has_proberty;
+
+CREATE  TABLE core.has_proberty (
+	customer_id int NOT NULL ,
+	product_id int NOT NULL,
+--  	PRIMARY KEY (customer_id,product_id),
+  	FOREIGN KEY (customer_id) REFERENCES CORE.customer (customer_id),
+  	FOREIGN KEY (product_id) REFERENCES CORE.product (product_id)
+);
+
+SELECT * FROM CORE.has_proberty;
+
+INSERT INTO core.has_proberty (CUSTOMER_ID , product_id) 
+
+SELECT c.CUSTOMER_ID , p.product_id 
+	FROM CORE.CUSTOMER c 
+		INNER JOIN CORE.SALES_TRANSACTION st 
+			ON 
+				c.CUSTOMERNAME = st.CUSTOMERNAME 
+			AND 
+				c.PHONE  = st.PHONE 
+			AND 
+				c.TERRITORY = st.TERRITORY
+			AND 
+				c.CONTACTLASTNAME = st.CONTACTLASTNAME
+			AND 
+				c.CONTACTFIRSTNAME = st.CONTACTFIRSTNAME
+			AND 
+				c.DEALSIZE = st.DEALSIZE
+  		
+		INNER JOIN core.PRODUCT p 
+			ON 
+				p.PRODUCTLINE = st.PRODUCTLINE 
+			AND 
+				p.PRODUCTCODE  = st.PRODUCTCODE 
+			AND 
+				p.MSRP  = st.MSRP ;
+
+-------------------------------------------------------------------------------------------------------------------------
+
+-- analysis 
+				
+SELECT count(*) FROM CORE.CUSTOMER c 
+	INNER JOIN core.HAS_PROBERTY hp 
+		ON hp.CUSTOMER_ID = c.CUSTOMER_ID 
+	INNER JOIN core.PRODUCT p 
+		ON p.PRODUCT_ID = hp.PRODUCT_ID 
+	WHERE CUSTOMERNAME = 'Land of Toys Inc.';
+-------------------------------------------------------------------------------------------------------------------------
+/*
+ * 	Create table date 
+ *  with column 
+		    ORDERDATE	
+			QTR_ID	
+			MONTH_ID	
+			YEAR_ID
+ * 
+ * */
+
+
+CREATE  TABLE core.date (
+	date_id int NOT NULL primary key auto_increment,
+	ORDERDATE DATE,
+	QTR_ID numeric,
+	MONTH_ID numeric,
+	YEAR_ID numeric
+);
+
+
+CREATE SEQUENCE core.date_id_seq;
+
+CREATE OR REPLACE TRIGGER CORE.date_bi
+BEFORE INSERT ON CORE.date
+FOR EACH ROW
+BEGIN
+  SELECT date_id_seq.nextval
+  INTO :new.date_id
+  FROM dual;
+END;
+
+INSERT INTO core.date ( ORDERDATE, QTR_ID, MONTH_ID,YEAR_ID)  
+SELECT DISTINCT  ORDERDATE , QTR_ID , MONTH_ID, YEAR_ID FROM CORE.SALES_TRANSACTION;
+
+SELECT * FROM core.date ;
+-------------------------------------------------------------------------------------------------------------------------
+/*
+ * 	Create table order 
+ *  with column 
+		    ORDERNUMBER	
+			QUANTITYORDERED	
+			PRICEEACH	
+			ORDERLINENUMBER	
+			SALES
+			STATUS
+ * 
+ * */
+
+CREATE  TABLE core.order (
+	order_id int primary key NOT NULL auto_increment,
+	ORDERNUMBER numeric,
+	QUANTITYORDERED numeric,
+	PRICEEACH numeric,
+	ORDERLINENUMBER numeric,
+    SALES numeric,
+    STATUS VARCHAR(50),
+    customer_id int not null,
+    date_id int not null,
+    FOREIGN KEY (customer_id) REFERENCES CORE.customer (customer_id),
+  	FOREIGN KEY (date_id) REFERENCES CORE.date (date_id)
+);
+
+
+CREATE SEQUENCE core.order_id_seq;
+
+CREATE OR REPLACE TRIGGER CORE.order_bi
+BEFORE INSERT ON CORE.date
+FOR EACH ROW
+BEGIN
+  SELECT order_id_seq.nextval
+  INTO :new.order_id
+  FROM dual;
+END;
+
+ 	
+				
+				
+				
+			
+			
+            
+INSERT INTO core.order (ORDERNUMBER, QUANTITYORDERED, PRICEEACH,ORDERLINENUMBER,SALES,STATUS , customer_id , date_id)
+select distinct st.ORDERNUMBER , st.QUANTITYORDERED , st.PRICEEACH , st.ORDERLINENUMBER , st.sales , st.status,
+c.customer_id , d.date_id
+from core.sales_transaction as st 
+inner join core.customer as c
+on st.CUSTOMERNAME = c.CUSTOMERNAME
+and st.PHONE = c.PHONE and st.TERRITORY = c.TERRITORY
+and st.CONTACTLASTNAME = c.CONTACTLASTNAME and st.CONTACTFIRSTNAME = c.CONTACTFIRSTNAME
+and st.DEALSIZE = c.DEALSIZE
+inner join core.date as d on st.ORDERDATE = d.ORDERDATE
+and st.QTR_ID = d.QTR_ID and st.MONTH_ID = d.MONTH_ID and st.YEAR_ID = d.YEAR_ID;
+
+ 
+
+
+
+SELECT * FROM core.order ;
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+SELECT count(*) AS product FROM core.SALES_TRANSACTION st 
+	WHERE CUSTOMERNAME ='Land of Toys Inc.'
+
+
+
+
+
+
