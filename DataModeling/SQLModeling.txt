@@ -44,49 +44,6 @@ SELECT count(*) + 1 AS row_count FROM CORE.SALES_TRANSACTION st ;
 SELECT * FROM core.SALES_TRANSACTION st ;
 
 
--------------------------------------------------------------------------------------------------------------------------
-/*
- * 	Create table address 
- *  with column 
-		    ADDRESSLINE1	
-			ADDRESSLINE2	
-			CITY	
-			STATE	
-			POSTALCODE	
-			COUNTRY	
- * 
- * */
-CREATE  TABLE core.address (
-	address_id number NOT NULL,
-    PRIMARY KEY (address_id),
-	ADDRESSLINE1 varchar(100),
-  	ADDRESSLINE2 varchar(100),
-  	city  VARCHAR(100),
-  	state	varchar(50),
-	postalcode varchar(20),	
-	country varchar(50),
-   CUSTOMERNAME varchar(100)
-);
-
-CREATE SEQUENCE core.address_id_seq
-
--- create trigger for this sequence
-
-CREATE OR REPLACE TRIGGER CORE.address_bi
-BEFORE INSERT ON CORE.address 
-FOR EACH ROW
-BEGIN
-  SELECT address_id_seq.nextval
-  INTO :new.address_id
-  FROM dual;
-END;
-
-INSERT INTO core.address ( ADDRESSLINE1, ADDRESSLINE2, city , state , postalcode , country , customername)  
-	SELECT distinct ADDRESSLINE1 ,ADDRESSLINE2, city,state,postalcode ,country ,CUSTOMERNAME  
-    FROM core.SALES_TRANSACTION;
-    
-
-select * from core.address;    
 
 -------------------------------------------------------------------------------------------------------------------------
 /*
@@ -151,6 +108,64 @@ INSERT INTO core.customer ( CUSTOMERNAME, PHONE, TERRITORY , CONTACTFIRSTNAME , 
 SELECT count(*) FROM core.customer;
 SELECT * FROM core.customer;
 
+
+
+-------------------------------------------------------------------------------------------------------------------------
+/*
+ * 	Create table address 
+ *  with column 
+		    ADDRESSLINE1	
+			ADDRESSLINE2	
+			CITY	
+			STATE	
+			POSTALCODE	
+			COUNTRY	
+ * 
+ * */
+CREATE  TABLE core.address (
+	address_id number NOT NULL,
+    PRIMARY KEY (address_id),
+	ADDRESSLINE1 varchar(100),
+  	ADDRESSLINE2 varchar(100),
+  	city  VARCHAR(100),
+  	state	varchar(50),
+	postalcode varchar(20),	
+	country varchar(50),
+        customer_id number,
+	FOREIGN KEY (customer_id) REFERENCES core.customer(customer_id)
+);
+
+CREATE SEQUENCE core.address_id_seq
+
+-- create trigger for this sequence
+
+CREATE OR REPLACE TRIGGER CORE.address_bi
+BEFORE INSERT ON CORE.address 
+FOR EACH ROW
+BEGIN
+  SELECT address_id_seq.nextval
+  INTO :new.address_id
+  FROM dual;
+END;
+
+INSERT INTO core.address ( ADDRESSLINE1, ADDRESSLINE2, city , state , postalcode , country , customer_id)
+	SELECT distinct ts.ADDRESSLINE1 ,ts.ADDRESSLINE2, ts.city,ts.state,ts.postalcode ,ts.country ,c.customer_id
+    FROM core.SALES_TRANSACTION as ts inner join customer as c
+			ON 
+				c.CUSTOMERNAME = st.CUSTOMERNAME 
+			AND 
+				c.PHONE  = st.PHONE 
+			AND 
+				c.TERRITORY = st.TERRITORY
+			AND 
+				c.CONTACTLASTNAME = st.CONTACTLASTNAME
+			AND 
+				c.CONTACTFIRSTNAME = st.CONTACTFIRSTNAME
+			AND 
+				c.DEALSIZE = st.DEALSIZE;
+    
+
+select * from core.address;    
 
 -------------------------------------------------------------------------------------------------------------------------
 /*
@@ -278,7 +293,7 @@ SELECT count(*) FROM CORE.CUSTOMER c
 
 
 CREATE  TABLE core.date (
-	date_id int NOT NULL primary key auto_increment,
+	date_id int NOT NULL primary key,
 	ORDERDATE DATE,
 	QTR_ID numeric,
 	MONTH_ID numeric,
@@ -315,7 +330,7 @@ SELECT * FROM core.date ;
  * */
 
 CREATE  TABLE core.order (
-	order_id int primary key NOT NULL auto_increment,
+	order_id int primary key NOT NULL,
 	ORDERNUMBER numeric,
 	QUANTITYORDERED numeric,
 	PRICEEACH numeric,

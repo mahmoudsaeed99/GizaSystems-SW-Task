@@ -1,0 +1,53 @@
+
+CREATE KEYSPACE Sales
+  WITH replication = {
+    'class': 'SimpleStrategy',
+    'replication_factor': 1
+  };
+
+
+use Sales;
+
+1- create orders
+
+CREATE TABLE Sales.Orders(
+  order_id UUID PRIMARY KEY,
+  YEAR_ID int,
+  ORDERNUMBER int,
+  PRICEEACH int,
+  ORDERLINENUMBER int,
+  STATUS text
+);
+
+2- create product
+
+CREATE TABLE Sales.Products(
+  product_id UUID PRIMARY KEY,
+  PRODUCTLINE text,
+  PRODUCTCODE text,
+  MSRP int,
+  order_id int,
+  SALES int,
+  QUANTITYORDERED int,	
+);
+
+
+3- customers
+
+CREATE TABLE Sales.Customers(
+  customer_id UUID PRIMARY KEY,
+  CUSTOMERNAME text,
+  PHONE text,
+  TERRITORY  text,
+  CONTACTLASTNAME  text,
+  CONTACTFIRSTNAME text,	
+  DEALSIZE text,
+  country text
+);
+
+
+
+
+
+
+
