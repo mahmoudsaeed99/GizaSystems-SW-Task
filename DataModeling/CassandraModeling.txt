@@ -8,45 +8,70 @@ CREATE KEYSPACE Sales
 
 use Sales;
 
-1- create orders
+--------------------------------------------------------------
 
-CREATE TABLE Sales.Orders(
+CREATE TABLE Sales.Orders_year(
   order_id UUID PRIMARY KEY,
   YEAR_ID int,
   ORDERNUMBER int,
-  PRICEEACH int,
-  ORDERLINENUMBER int,
-  STATUS text
+  QUANTITYORDERED int
 );
 
-2- create product
+--------------------------------------------------------------
 
-CREATE TABLE Sales.Products(
-  product_id UUID PRIMARY KEY,
+
+CREATE TABLE Sales.Products_line_sales(
+  product_sales_id UUID PRIMARY KEY,
   PRODUCTLINE text,
-  PRODUCTCODE text,
-  MSRP int,
-  order_id int,
-  SALES int,
-  QUANTITYORDERED int,	
+  SALES int	
 );
 
 
-3- customers
+--------------------------------------------------------------
 
-CREATE TABLE Sales.Customers(
+CREATE TABLE Sales.Customers_country(
   customer_id UUID PRIMARY KEY,
-  CUSTOMERNAME text,
-  PHONE text,
-  TERRITORY  text,
-  CONTACTLASTNAME  text,
-  CONTACTFIRSTNAME text,	
-  DEALSIZE text,
-  country text
+  CUSTOMERNAME VARCHAR(50),
+  PHONE VARCHAR(20),
+  TERRITORY VARCHAR(50),
+  CONTACTLASTNAME  VARCHAR(50),
+  CONTACTFIRSTNAME VARCHAR(50),	
+  DEALSIZE VARCHAR(50),
+  country VARCHAR(25)
+);
+
+--------------------------------------------------------------
+CREATE TABLE Sales.order_details(
+    order_id UUID PRIMARY KEY NOT NULL,
+    ORDERNUMBER int,
+    PRICEEACH float,
+    QUANTITYORDERED  int,
+    ORDERDATE Date,
+    STATUS VARCHAR(50),
+    SALES int
+);
+
+--------------------------------------------------------------
+CREATE TABLE Sales.product_quantity(
+    product_quantity_id UUID PRIMARY KEY NOT NULL,
+    PRODUCTLINE VARCHAR(50),
+    PRODUCTCODE VARCHAR(50),
+    MSRP numeric,
+    QUANTITYORDERED numeric
 );
 
 
+--------------------------------------------------------------
 
+CREATE TABLE Sales.customers_deal(
+  customer_deal_id UUID PRIMARY KEY,
+  CUSTOMERNAME VARCHAR(50),
+  PHONE VARCHAR(20),
+  TERRITORY VARCHAR(50),
+  CONTACTLASTNAME  VARCHAR(50),
+  CONTACTFIRSTNAME VARCHAR(50),	
+  DEALSIZE VARCHAR(50)
+);
 
 
 
