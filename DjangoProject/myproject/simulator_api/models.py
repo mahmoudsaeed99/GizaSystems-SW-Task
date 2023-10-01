@@ -17,11 +17,11 @@ class Simulator(models.Model):
     ("sql","sql")
 ]
     timeSeries_type = models.CharField(max_length=25 ,choices=timeSeries_CHOICES , default="additive")
-    metaData = models.CharField(max_length=50 , default='' )
+    metaData = models.CharField(max_length=100 , default='' )
     producer_type = models.CharField(max_length=25,choices=producer_CHOICES )
     process_id = models.IntegerField(null=True)
     status = models.CharField(max_length=25,default='Added')
-    
+
 
 
 
@@ -32,12 +32,13 @@ class DataConfig(models.Model):
     missingPercent = models.DecimalField(max_digits=5 , decimal_places=3)
     outlierPercent = models.IntegerField(default=0)
     timeSeries_CHOICES = [
-    ( 1, 1),
+    (1, 1),
     (0,0),
 ]
     cycle_amplitude = models.IntegerField(choices=timeSeries_CHOICES)
     cycle_frequency = models.IntegerField()
     simulater = models.ForeignKey(Simulator , on_delete=models.CASCADE , related_name='dataConfig')
+
 
 
 class Component(models.Model):

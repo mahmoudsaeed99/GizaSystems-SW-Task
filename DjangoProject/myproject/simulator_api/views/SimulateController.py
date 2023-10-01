@@ -1,6 +1,3 @@
-# import os
-# import sys
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 
 from .ConfigController import ConfigController
 from rest_framework.response import Response
@@ -15,6 +12,9 @@ from .BuildSimulator import BuildSimulator as BuildSimulator
 
 from .ConfigManager.SQLDB import *
 
+from multiprocessing import Process
+import psutil
+
 threads = {}
 
 class SimulateController(ListCreateAPIView ):
@@ -22,6 +22,54 @@ class SimulateController(ListCreateAPIView ):
     serializer_class = SimulateSerializer
     filter_backends = (SearchFilter,)
     search_fields = ('=id',)
+
+    def post(self, request, *args, **kwargs):
+        print("enter")
+        """
+           receive simulator data and pass each data to the specific model
+
+        """
+        # newSimulate = self.create(request.data['startDate'] , *args, **kwargs )
+
+        # Extract all data that related to simulator
+        # simulate = {"data":{'startDate':request.data['startDate'],
+        #                     'name':request.data['name'],
+        #                     'timeSeries_type':request.data['timeSeries_type'],
+        #                     'producer_type':request.data['producer_type'],
+        #                     }}
+        #
+        # simkeys = request.data.keys()
+        #
+        # # Check which attributes that the user add in the request
+        # if 'endDate' in simkeys:
+        #     simulate['data']['endDate'] = request.data['endDate']
+        # else:
+        #       simulate['data']['dataSize'] = request.data['dataSize']
+
+        try:
+            serielizer = SimulateSerializer(data=request.data)
+            # simulate =  self.create(simulate , 'custom', **kwargs )
+            if serielizer.is_valid():
+                serielizer.save()
+                items = serielizer.data['id']
+                print(request.data['dataset'])
+                configs = ConfigController().add(request.data['dataset'], items, **kwargs)
+            else:
+                raise Exception("not valid simulator data")
+        except Exception as e:
+            print("error in SimulateControl "+str(e))
+        return Response(serielizer.data)
+
+
+    def get(self,request, *args, **kwargs):
+        """
+            return simulator using simulator_id
+
+        """
+        simulator_id = request.GET['search']
+        config = SQLDB()
+        simulatorConfigs = config.read(simulator_id)
+        return Response(simulatorConfigs)
 
     @api_view(['GET'])
     def runSimulator(request):
@@ -40,15 +88,19 @@ class SimulateController(ListCreateAPIView ):
         simulatorConfigs = config.read(simulator_id)
         # make exception handling to catch error
         try:
+
             buildSimulator = BuildSimulator(simulatorConfigs)
-            buildSimulator.start()
-            id_ = buildSimulator.ident
-            threads[id_] = buildSimulator
+            buildSimulator.simulate()
+            # process =Process(target= buildSimulator.simulate)
+            # process.start()
+            # id_ = process.pid
+            id_ = 22
+            # threads[id_] = buildSimulator
             SimulateController().update_proccess(simulator_id, id_)
             
-        except:
+        except Exception as e:
             SimulateController().update_status(simulator_id ,"Failed")
-            return Response({'error':"failed to build simulator"})
+            return Response({'error':"failed to build simulator "+str(e)})
         
         return Response({'message':"Built simulator: "+str(simulator_id)+" Running in process id : "+str(id_)+""})
         # return simulator
@@ -64,11 +116,9 @@ class SimulateController(ListCreateAPIView ):
         if process_id == -1 or process_id == "":
             error = {"error":"please input valid id , add key 'simulator_id' and pass valid id value"}
             return Response(error)
-        simulator = Simulator.objects.get( process_id = process_id)
-        print(threads)
+        simulator = Simulator.objects.all().filter(process_id = process_id)[0]
         try:
-            thread = threads.get(process_id)
-            thread.stop()
+             psutil.Process(simulator.process_id).terminate()
         except:
             return Response({'message':"Stop building simulator: "+str(simulator.id)+" un-successfully"})
 
@@ -131,13 +181,3 @@ class SimulateController(ListCreateAPIView ):
     #     self.perform_create(serializer)
     #     headers = self.get_success_headers(serializer.data)
     #     return serializer.data
-
-
-
-
-
-
-
-
-
-

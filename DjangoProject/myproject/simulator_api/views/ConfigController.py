@@ -3,8 +3,9 @@
 
 from .ComponentController import *
 from rest_framework.filters import SearchFilter
-from simulator_api.serializers.ConfigSerializer import *
-
+from simulator_api.serializers.ConfigSerializer import ConfigSerializer
+from ..models import *
+from django.http import HttpResponse, JsonResponse
 
 
 class ConfigController(ListCreateAPIView ):
@@ -31,29 +32,20 @@ class ConfigController(ListCreateAPIView ):
         configList = []
         dataConfig = {}
         for i in data:
-            dataConfig = {'frequency':i['frequency'],
-                            'noiseLevel':i['noise_level'],
-                            'trendCoef':' '.join(str(i) for i in i['trend_coefficients']),
-                            'missingPercent':i['missing_percentage'],
-                            'outlierPercent':i['outlier_percentage'],
-                            'cycle_amplitude':i['cycle_amplitude'],
-                            'cycle_frequency':i['cycle_frequency'],
-                            'simulater':simulatorData,
-                            }
-            
+            i['trendCoef'] = ' '.join(str(i) for i in i['trendCoef'])
+            i['simulater'] = simulatorData
             # create object of ConfigSerializer
-            serielizer = ConfigSerializer(data=dataConfig)
+            serielizer = ConfigSerializer(data=i)
             # check if the data are validate or not
-            if serielizer.is_valid():
-                serielizer.save()
+            try:
+                print(serielizer.is_valid())
+                if serielizer.is_valid():
+                    serielizer.save()
+                    items = serielizer.data['id']
+                    componentList = ComponentController().add(i['seasonality_components'] ,items)
 
-            # DataConfig.save()
-            # configs =  self.create(dataConfig , 'custom', **kwargs )
-            items = serielizer.data['id']
-            componentList = ComponentController().add(i['seasonality_components'] ,items)
-            # dataConfig = serielizer.data
-            # dataConfig['components'] = componentList
-            # configList.append()
+            except Exception as e:
+                print("error in config control "+str(e))
         return serielizer.data
     
     def get_simulator_data(self,simulator_id):

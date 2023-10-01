@@ -1,5 +1,5 @@
-from .ComponentController import *
-
+# from .ComponentController import *
+from rest_framework.response import Response
 from sklearn.preprocessing import MinMaxScaler
 
 from .TimeGeneration import TimeSeriesGeneration
@@ -15,15 +15,16 @@ from .DataProducer.ProducerFactory import *
 import threading
 
 
-class BuildSimulator(threading.Thread):
+class BuildSimulator():
    
     def __init__(self,simulatorConfigs):
          self.simulatorConfigs = simulatorConfigs
-         threading.Thread.__init__(self)   
+         # threading.Thread.__init__(self)
 
     def stop(self):
         self._stop.set()
-    def run(self):
+    def simulate(self):
+
         from .SimulateController import SimulateController
         meta_data = []
         counter = 0
@@ -36,8 +37,10 @@ class BuildSimulator(threading.Thread):
         time_series_generate = TimeSeriesGeneration(self.simulatorConfigs['startDate'] ,endDate)
 
         # time.sleep(20)
+        print(self.simulatorConfigs['dataset'])
         for i in self.simulatorConfigs['dataset']:
             date_rng = time_series_generate.generate(i['frequency'])
+            print(i['components'])
 
             for j in i['components']:
                 # check threading with sleep() function
@@ -72,8 +75,10 @@ class BuildSimulator(threading.Thread):
                 # df.to_csv('sample_datasets/' + str(counter) + '.csv', encoding='utf-8', index=False)
                 counter +=1
                 fileName = "E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/dataSet/"+str(i['id'])+"_"+str(j['id']) + '.csv'
-                producer = ProducerFactory().createProducer(fileName , 'csv')
+                producer = ProducerFactory().createProducer('csv')
                 producer.saveData(df,fileName)
+                producer = ProducerFactory().createProducer('nifi')
+                producer.saveData(df)
                 meta_data.append({'simulator':self.simulatorConfigs['id'],
                                       'dataConfig':i['id'],
                                       'components':j['id'],
@@ -82,10 +87,11 @@ class BuildSimulator(threading.Thread):
 
         meta_data_df = pd.DataFrame.from_records(meta_data)
         # print(simulator['startDate'])
-        meta_data_name = 'E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/metaData/+'+str(self.simulatorConfigs['id'])+'.csv'
+        meta_data_name = 'E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/metaData/'+str(self.simulatorConfigs['id'])+'.csv'
+        producer = ProducerFactory().createProducer( 'csv')
         producer.saveData(meta_data_df , meta_data_name)
-        SimulateController().update_meta(self.simulatorConfigs['id']  ,meta_data_name )
+        SimulateController().update_meta(self.simulatorConfigs['id'] ,meta_data_name )
         SimulateController().update_proccess(self.simulatorConfigs['id'] , 0)
         SimulateController().update_status(self.simulatorConfigs['id'] , "Success")
-        return  Response({'message':" building simulator: "+str(self.simulatorConfigs['id'])+" successfully "})
+        return Response({'message':" building simulator: "+str(self.simulatorConfigs['id'])+" successfully "})
         

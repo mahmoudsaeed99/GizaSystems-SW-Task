@@ -1,13 +1,14 @@
 from .CSVProducer import *
 from .JsonProducer import *
 from .XMLProducer import *
+from .NiFiProducer import *
 
 class ProducerFactory():
     
-    def createProducer(self , name , type_):
+    def createProducer(self, type_):
         if type_.lower() == 'csv':
             return CSVProducer()
         elif type_.lower() == 'xml':
             return XMLProducer()    
-        
-        
+        elif type_.lower() == "nifi":
+            return NiFiProducer()
