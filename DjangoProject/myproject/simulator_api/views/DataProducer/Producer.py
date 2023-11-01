@@ -15,4 +15,3 @@ class Producer(ABC):
     @abstractmethod
     def saveData(self,data,name):
         pass
-    

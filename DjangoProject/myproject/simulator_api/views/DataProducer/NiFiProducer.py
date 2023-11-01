@@ -6,9 +6,9 @@ import requests
 
 class NiFiProducer(Producer):
 
-    def saveData(self, data):
+    def saveData(self, data , urlName):
         try:
-            url = "http://localhost:5000/saveData"
+            url = "http://localhost:5000/"+str(urlName)
             data['timestamp'] = data['timestamp'].astype(str)
             data['anomaly'] = data['anomaly'].astype(str)
             d = {'value':data['value'][0] , 'timestamp':data['timestamp'][0] , 'anomaly':data['anomaly'][0]}

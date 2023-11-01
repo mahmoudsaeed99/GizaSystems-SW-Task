@@ -14,13 +14,15 @@ class Simulator(models.Model):
     producer_CHOICES = [
     ("csv", "csv"),
     ("xml", "xsml"),
-    ("sql","sql")
+    ("sql","sql"),
+    ("kafka","kafka")
 ]
+    producer_name = models.CharField(max_length=25 , default='')
     timeSeries_type = models.CharField(max_length=25 ,choices=timeSeries_CHOICES , default="additive")
-    metaData = models.CharField(max_length=100 , default='' )
-    producer_type = models.CharField(max_length=25,choices=producer_CHOICES )
+    metaData = models.CharField(max_length=100, default='')
+    producer_type = models.CharField(max_length=25, choices=producer_CHOICES)
     process_id = models.IntegerField(null=True)
-    status = models.CharField(max_length=25,default='Added')
+    status = models.CharField(max_length=25, default='Added')
 
 
 
@@ -37,6 +39,8 @@ class DataConfig(models.Model):
 ]
     cycle_amplitude = models.IntegerField(choices=timeSeries_CHOICES)
     cycle_frequency = models.IntegerField()
+    generator_id = models.IntegerField( blank=False)
+    attribute_id = models.IntegerField(blank=False)
     simulater = models.ForeignKey(Simulator , on_delete=models.CASCADE , related_name='dataConfig')
 
 

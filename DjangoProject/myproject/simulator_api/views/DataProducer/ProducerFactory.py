@@ -1,5 +1,6 @@
 from .CSVProducer import *
 from .JsonProducer import *
+from .KafkaProducer import KafkaProducer
 from .XMLProducer import *
 from .NiFiProducer import *
 
@@ -12,3 +13,5 @@ class ProducerFactory():
             return XMLProducer()    
         elif type_.lower() == "nifi":
             return NiFiProducer()
+        elif type_.lower() == "kafka":
+            return KafkaProducer()

@@ -10,6 +10,5 @@ urlpatterns = [
     path('Components/', ComponentController.as_view(), name='Components'),
     path('run/', SimulateController.runSimulator),
     path('stop/', SimulateController.stopSimulator),
-    
 
 ]

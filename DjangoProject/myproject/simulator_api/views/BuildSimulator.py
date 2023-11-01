@@ -37,10 +37,8 @@ class BuildSimulator():
         time_series_generate = TimeSeriesGeneration(self.simulatorConfigs['startDate'] ,endDate)
 
         # time.sleep(20)
-        print(self.simulatorConfigs['dataset'])
         for i in self.simulatorConfigs['dataset']:
             date_rng = time_series_generate.generate(i['frequency'])
-            print(i['components'])
 
             for j in i['components']:
                 # check threading with sleep() function
@@ -69,24 +67,30 @@ class BuildSimulator():
                 data, anomaly = OutliersComponent.addComponent(data, i['outlierPercent'])
 
                 data = MissingValuesComponent.addComponent(data, i['missingPercent'])
-
-                df = pd.DataFrame({'value': data, 'timestamp': date_rng, 'anomaly': anomaly})
-                # producer = ProducerFactory().createProducer(fileName , 'csv')
-                # df.to_csv('sample_datasets/' + str(counter) + '.csv', encoding='utf-8', index=False)
+                # data frame that will be saved
+                df = pd.DataFrame({'value': data,
+                                   'timestamp': date_rng,
+                                   'anomaly': anomaly})
                 counter +=1
-                fileName = "E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/dataSet/"+str(i['id'])+"_"+str(j['id']) + '.csv'
-                producer = ProducerFactory().createProducer('csv')
-                producer.saveData(df,fileName)
-                producer = ProducerFactory().createProducer('nifi')
-                producer.saveData(df)
+                producer = ProducerFactory().createProducer(self.simulatorConfigs['producer_type'])
+                fileName = self.simulatorConfigs['producer_type']
+                # added to csv only
+                if self.simulatorConfigs['producer_type'].lower() == "csv":
+                    fileName = "E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/"+str(fileName)+"/"+str(i['id'])+"_"+str(j['id']) + '.csv'
+                    producer.saveData(df,fileName)
+                # added to kafka only
+                if self.simulatorConfigs['producer_type'].lower() == "kafka":
+                    df["attributeId"] = i["attribute_id"]
+                    df["assetId"] = i["generator_id"]
+
+                producer.saveData(df , self.simulatorConfigs['producer_name'])
                 meta_data.append({'simulator':self.simulatorConfigs['id'],
                                       'dataConfig':i['id'],
                                       'components':j['id'],
-                                     'fileName': fileName,})
+                                     'fileName': fileName})
 
 
         meta_data_df = pd.DataFrame.from_records(meta_data)
-        # print(simulator['startDate'])
         meta_data_name = 'E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/metaData/'+str(self.simulatorConfigs['id'])+'.csv'
         producer = ProducerFactory().createProducer( 'csv')
         producer.saveData(meta_data_df , meta_data_name)

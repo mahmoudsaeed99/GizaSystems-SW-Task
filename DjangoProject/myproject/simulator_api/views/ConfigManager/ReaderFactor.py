@@ -9,6 +9,7 @@ Created on Tue Aug 29 23:00:51 2023
 from .CSVFile import *
 from .XMLFile import *
 from .SQLDB import *
+from .KafkaConsumer import KafkaConsumer
 
 
 
@@ -22,13 +23,14 @@ class ReaderFactor:
             return CSVFile(name)
         elif(type_ == 'SQL'):
             return SQLDB(name)
+        elif(type_.lower() == 'kafka'):
+            return KafkaConsumer(name)
         else:
             raise Exception("not supported file")
         
             
        
         
-            
             
             
             

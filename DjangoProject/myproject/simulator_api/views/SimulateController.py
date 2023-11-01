@@ -9,11 +9,13 @@ from simulator_api.serializers.SimulatorSerializers import *
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
 from .BuildSimulator import BuildSimulator as BuildSimulator
-
+from .ConfigManager.ReaderFactor import ReaderFactor
+from .DataProducer.ProducerFactory import ProducerFactory
 from .ConfigManager.SQLDB import *
-
+from .KafkaToCSV import KafkaToCSV
 from multiprocessing import Process
 import psutil
+import threading
 
 threads = {}
 
@@ -24,35 +26,22 @@ class SimulateController(ListCreateAPIView ):
     search_fields = ('=id',)
 
     def post(self, request, *args, **kwargs):
-        print("enter")
         """
            receive simulator data and pass each data to the specific model
 
         """
-        # newSimulate = self.create(request.data['startDate'] , *args, **kwargs )
-
-        # Extract all data that related to simulator
-        # simulate = {"data":{'startDate':request.data['startDate'],
-        #                     'name':request.data['name'],
-        #                     'timeSeries_type':request.data['timeSeries_type'],
-        #                     'producer_type':request.data['producer_type'],
-        #                     }}
-        #
-        # simkeys = request.data.keys()
-        #
-        # # Check which attributes that the user add in the request
-        # if 'endDate' in simkeys:
-        #     simulate['data']['endDate'] = request.data['endDate']
-        # else:
-        #       simulate['data']['dataSize'] = request.data['dataSize']
-
         try:
+            print(request.data)
+            if (request.data["producer_type"].lower() == "kafka"):
+                if ("producer_name" not in request.data.keys() or request.data["producer_name"].lower() == ""):
+                    raise Exception("you should add kafka topic name")
+
             serielizer = SimulateSerializer(data=request.data)
             # simulate =  self.create(simulate , 'custom', **kwargs )
+            print(serielizer.is_valid())
             if serielizer.is_valid():
                 serielizer.save()
                 items = serielizer.data['id']
-                print(request.data['dataset'])
                 configs = ConfigController().add(request.data['dataset'], items, **kwargs)
             else:
                 raise Exception("not valid simulator data")
@@ -86,6 +75,12 @@ class SimulateController(ListCreateAPIView ):
         SimulateController().update_status(simulator_id ,"Running")
         config = SQLDB()
         simulatorConfigs = config.read(simulator_id)
+        #kafka to csv
+        kafkaToCsv = KafkaToCSV()
+        kafka_consumer = threading.Thread(target=kafkaToCsv.bridge , args=[simulatorConfigs['producer_name']])
+        kafka_consumer.daemon = True  # This allows the thread to exit when the main application exits.
+        kafka_consumer.start()
+        #------------
         # make exception handling to catch error
         try:
 
@@ -93,19 +88,18 @@ class SimulateController(ListCreateAPIView ):
             buildSimulator.simulate()
             # process =Process(target= buildSimulator.simulate)
             # process.start()
+            id_ = 1555
             # id_ = process.pid
-            id_ = 22
             # threads[id_] = buildSimulator
             SimulateController().update_proccess(simulator_id, id_)
             
         except Exception as e:
             SimulateController().update_status(simulator_id ,"Failed")
             return Response({'error':"failed to build simulator "+str(e)})
-        
+
         return Response({'message':"Built simulator: "+str(simulator_id)+" Running in process id : "+str(id_)+""})
         # return simulator
 
-    
     @api_view(['GET'])
     def stopSimulator(request):
         """
@@ -171,13 +165,3 @@ class SimulateController(ListCreateAPIView ):
         """
         simulator = Simulator.objects.get(pk = simulator_id)
         return simulator.status
-
-    
-    
-    # override function create
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request['data'])
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return serializer.data
