@@ -24,10 +24,11 @@ class KafkaConsumer(File):
         values = []
         last_message_time = time.time()
         while True:
+            start_time = time.time()
             msg = consumer.poll(1.0)
 
             if msg is None:
-                if time.time() - last_message_time > 10:  # Adjust the timeout as needed (60 seconds in this example)
+                if time.time() - last_message_time > 50:  # Adjust the timeout as needed (60 seconds in this example)
                     print("No data received for too long. Stopping the consumer.")
                     consumer.close()
                     break
