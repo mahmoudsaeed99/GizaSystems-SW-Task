@@ -1,0 +1,2 @@
+kafka:
+  broker_url: "localhost:9092"

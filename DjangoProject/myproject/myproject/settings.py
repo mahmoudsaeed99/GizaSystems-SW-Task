@@ -141,4 +141,3 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 KAFKA_BROKER = 'localhost:9092'  # Replace with your Kafka broker(s) address
-KAFKA_GROUP_ID = 'my-django-app'

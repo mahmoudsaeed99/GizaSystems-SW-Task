@@ -9,7 +9,7 @@ Created on Tue Aug 29 23:00:51 2023
 from .CSVFile import *
 from .XMLFile import *
 from .SQLDB import *
-from .KafkaConsumer import KafkaConsumer
+from .KafkaConfig import KafkaConfig
 
 
 
@@ -24,7 +24,7 @@ class ReaderFactor:
         elif(type_ == 'SQL'):
             return SQLDB(name)
         elif(type_.lower() == 'kafka'):
-            return KafkaConsumer(name)
+            return KafkaConfig(name)
         else:
             raise Exception("not supported file")
         

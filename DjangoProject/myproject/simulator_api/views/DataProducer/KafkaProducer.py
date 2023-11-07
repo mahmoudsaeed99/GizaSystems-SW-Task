@@ -7,25 +7,25 @@ import json
 import requests
 import time
 class KafkaProducer(Producer):
-
-    def saveData(self, data , topic_name):
-        try:
-            from confluent_kafka import Producer
-            bootstrap_servers = 'localhost:9092'
-            # # Create a Kafka producer instance
-            producer_config = {
+    def __init__(self):
+        from confluent_kafka import Producer
+        bootstrap_servers = 'localhost:9092'
+        # # Create a Kafka producer instance
+        producer_config = {
                 "bootstrap.servers": bootstrap_servers,
                 'acks': 0,
-            }
-            self.admin_client = AdminClient({'bootstrap.servers': bootstrap_servers})
-            self.create_topic(topic_name)
-            producer = Producer(producer_config)
+        }
+        self.admin_client = AdminClient({'bootstrap.servers': bootstrap_servers})
+        self.producer = Producer(producer_config)
+    def saveData(self, data , topic_name):
+        try:
             data = {"value":data['value'][0],"timestamp":str(data['timestamp'][0]),
                     "attributeId":str(data['attributeId'][0]) , "assetId":str(data['assetId'][0])}
             start_time = time.time()
             serialized_data = json.dumps(data).encode('utf-8')
-            producer.produce(topic_name , serialized_data)
-            producer.flush()
+            self.create_topic(topic_name)
+            self.producer.produce(topic_name , serialized_data)
+            self.producer.flush()
             end_time = time.time()
             print(end_time - start_time)
         except Exception as e:

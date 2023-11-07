@@ -2,8 +2,7 @@ import pandas as pd
 import json
 from .ConfigManager.ReaderFactor import ReaderFactor
 from .DataProducer.ProducerFactory import ProducerFactory
-from confluent_kafka import KafkaError
-from confluent_kafka import KafkaException
+from .KafkaConsumer import KafkaConsumer
 from datetime import datetime
 import time
 class KafkaToCSV:
@@ -11,8 +10,8 @@ class KafkaToCSV:
     def bridge(self , topicName):
 
         start_time = time.time()
-        kafkaConsumer = ReaderFactor().createReader(topicName, "kafka")
-        dataConsumer = kafkaConsumer.read()
+        kafkaConfig = ReaderFactor().createReader("config.yml", "kafka")
+        dataConsumer = KafkaConsumer().comsume(kafkaConfig, topicName)
         end_time = time.time()
         print(end_time - start_time)
         csvProducer = ProducerFactory().createProducer("csv")

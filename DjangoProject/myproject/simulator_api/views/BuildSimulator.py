@@ -37,6 +37,8 @@ class BuildSimulator():
         time_series_generate = TimeSeriesGeneration(self.simulatorConfigs['startDate'] ,endDate)
 
         # time.sleep(20)
+        producer = ProducerFactory().createProducer(self.simulatorConfigs['producer_type'])
+        fileName = self.simulatorConfigs['producer_type']
         for i in self.simulatorConfigs['dataset']:
             date_rng = time_series_generate.generate(i['frequency'])
 
@@ -72,8 +74,6 @@ class BuildSimulator():
                                    'timestamp': date_rng,
                                    'anomaly': anomaly})
                 counter +=1
-                producer = ProducerFactory().createProducer(self.simulatorConfigs['producer_type'])
-                fileName = self.simulatorConfigs['producer_type']
                 # added to csv only
                 if self.simulatorConfigs['producer_type'].lower() == "csv":
                     fileName = "E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/"+str(fileName)+"/"+str(i['id'])+"_"+str(j['id']) + '.csv'
