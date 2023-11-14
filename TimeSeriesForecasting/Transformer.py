@@ -123,12 +123,15 @@ class TransformedData():
             new_timestamp = X['timestamp'].iloc[-1] + timedelta(days=time_interval[1])
 
         X = X.ffill()
+        l = len(X)
         r = pd.DataFrame({'timestamp':[new_timestamp] , "value":[None]})
         X = pd.concat([X, r], ignore_index=True)
         # Apply the pipeline to the training data
         window_size = self.configs['window_avg']
         df_transformed = self.preprocessing_pipeline.fit_transform(X)
-        # df_transformed['moving_average'].iloc[-1] = None
+        if l <= window_size:
+            df_transformed['moving_average'].iloc[-1] = None
+            df_transformed['moving_average'] = df_transformed['moving_average'].interpolate(method='linear')
         # df_transformed = DropOutliers().transform(df_transformed , interpolate="moving_average")
         # last_weighted_average = df_transformed['moving_average'].iloc[-2]
         #
