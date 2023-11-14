@@ -1,4 +1,3 @@
-
 from .ConfigController import ConfigController
 from rest_framework.response import Response
 # Create your views here.
@@ -30,24 +29,28 @@ class SimulateController(ListCreateAPIView ):
            receive simulator data and pass each data to the specific model
 
         """
+        # return(SimulateSerializer().create(request))
         try:
-            print(request.data)
             if (request.data["producer_type"].lower() == "kafka"):
                 if ("producer_name" not in request.data.keys() or request.data["producer_name"].lower() == ""):
                     raise Exception("you should add kafka topic name")
 
+            dataset_data = request.data.pop('dataset', [])
             serielizer = SimulateSerializer(data=request.data)
+            print("request.data:", request.data)
+            print("dataset_data:", dataset_data)
             # simulate =  self.create(simulate , 'custom', **kwargs )
             print(serielizer.is_valid())
             if serielizer.is_valid():
                 serielizer.save()
                 items = serielizer.data['id']
-                configs = ConfigController().add(request.data['dataset'], items, **kwargs)
-            else:
-                raise Exception("not valid simulator data")
+                print(1)
+                configs = ConfigController().add(dataset_data, items, **kwargs)
+            # else:
+            #     raise Exception("not valid simulator data")
         except Exception as e:
             print("error in SimulateControl "+str(e))
-        return Response(serielizer.data)
+        return Response(request.data)
 
 
     def get(self,request, *args, **kwargs):

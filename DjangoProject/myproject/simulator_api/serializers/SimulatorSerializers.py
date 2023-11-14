@@ -5,11 +5,10 @@ from rest_framework.response import Response
 from ..views.ConfigController import *
 
 from ..views.ConfigManager.SQLDB import *
-
+from .ConfigSerializer import ConfigSerializer
 
 class SimulateSerializer(serializers.ModelSerializer):
 
-    # dataConfig = serializers.StringRelatedField(many=True )
     class Meta:
         model = Simulator
         fields = "__all__"
@@ -18,45 +17,28 @@ class SimulateSerializer(serializers.ModelSerializer):
         post function (override) : make this function to get only simulator data from request
 
     """
-    # def post(self, request, *args, **kwargs):
-    #     print("enter")
-    #     """
-    #        receive simulator data and pass each data to the specific model
-    #
-    #     """
-    #     # newSimulate = self.create(request.data['startDate'] , *args, **kwargs )
-    #
-    #     # Extract all data that related to simulator
-    #     simulate = {"data":{'startDate':request.data['startDate'],
-    #                         'name':request.data['name'],
-    #                         'timeSeries_type':request.data['timeSeries_type'],
-    #                         'producer_type':request.data['producer_type'],
-    #                         }}
-    #
-    #     simkeys = request.data.keys()
-    #
-    #     # Check which attributes that the user add in the request
-    #     if 'endDate' in simkeys:
-    #         simulate['data']['endDate'] = request.data['endDate']
-    #     else:
-    #           simulate['data']['dataSize'] = request.data['dataSize']
-    #
-    #     simulate =  self.create(simulate , 'custom', **kwargs )
-    #     items = simulate.data['id']
-    #     configs = ConfigController().add(request.data['dataset'], items, **kwargs)
-    #     return Response(simulate.data)
-    #
-    #
-    # def get_simulator(self,simulator_id):
-    #     """
-    #         return simulator using simulator_id
-    #
-    #     """
-    #     config = SQLDB()
-    #     simulatorConfigs = config.read(simulator_id)
-    #     return simulatorConfigs
 
+    # def create(self, request, **kwargs):
+    #     dataset_data = request.data.pop('dataset', [])
+    #     try:
+    #         if (request.data["producer_type"].lower() == "kafka"):
+    #             if ("producer_name" not in request.data.keys() or request.data["producer_name"].lower() == ""):
+    #                 raise Exception("you should add kafka topic name")
+    #
+    #         print(request.data)
+    #         serielizer = SimulateSerializer(data=request.data)
+    #         self.data = request.data
+    #         print(serielizer.is_valid())
+    #         if serielizer.is_valid():
+    #             self.save()
+    #             print(serielizer)
+    #             # items = serielizer.data['id']
+    #             # configs = ConfigSerializer().create(dataset_data['dataset'], items, **kwargs)
+    #         # else:
+    #         #     raise Exception("not valid simulator data")
+    #     except Exception as e:
+    #         print("error in SimulateControl "+str(e))
+    #     return Response(serielizer.data)
 
-        
 
 

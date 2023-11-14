@@ -31,17 +31,24 @@ class ConfigController(ListCreateAPIView ):
         """
         configList = []
         dataConfig = {}
+        print(3)
         for i in data:
-            i['trendCoef'] = ' '.join(str(i) for i in i['trendCoef'])
+            print(3)
+            i['trendCoef'] = ' '.join(str(j) for j in i['trendCoef'])
+            print(3)
             i['simulater'] = simulatorData
+            print(3)
             # create object of ConfigSerializer
             serielizer = ConfigSerializer(data=i)
             # check if the data are validate or not
             try:
                 print(serielizer.is_valid())
+                print(3)
                 if serielizer.is_valid():
                     serielizer.save()
+                    print(3)
                     items = serielizer.data['id']
+                    print(3)
                     componentList = ComponentController().add(i['seasonality_components'] ,items)
 
             except Exception as e:

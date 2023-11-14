@@ -22,6 +22,7 @@ class Simulator(models.Model):
     metaData = models.CharField(max_length=100, default='')
     producer_type = models.CharField(max_length=25, choices=producer_CHOICES)
     process_id = models.IntegerField(null=True)
+    airflow_daged = models.IntegerField(default=0)
     status = models.CharField(max_length=25, default='Added')
 
 
