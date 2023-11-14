@@ -418,35 +418,35 @@
     },
     "242":{
         "timestamp_col":[],
-        "window_avg":1,
+        "window_avg":2,
         "time_interval":["minutes",10],
-        "lags":[],
-        "intercept":-4.440892098500626e-16,
-        "weights":[1.0]
+        "lags":[1],
+        "intercept":2.220446049250313e-16,
+        "weights":[2.0000000000000004, -1.0000000000000002]
     },
     "246":{
         "timestamp_col":[],
-        "window_avg":1,
+        "window_avg":2,
         "time_interval":["hours",6],
-        "lags":[],
-        "intercept":0,
-        "weights":[1.0]
+        "lags":[1],
+        "intercept":1.2212453270876722e-15,
+        "weights":[2.0000000000000013, -1.0000000000000002]
     },
     "251":{
         "timestamp_col":[],
-        "window_avg":1,
+        "window_avg":2,
         "time_interval":["hours",8],
-        "lags":[],
-        "intercept":-1.1102230246251565e-16,
-        "weights":[1.0]
+        "lags":[1],
+        "intercept":1.1102230246251565e-16,
+        "weights":[2.000000000000001, -1.0000000000000002]
     },
     "256":{
         "timestamp_col":["month" , "quarter"],
-        "window_avg":1,
+        "window_avg":2,
         "time_interval":["minutes",10],
         "lags":[],
-        "intercept":-7.993605777301127e-15,
-        "weights":[ 1.15927890e-15, -7.77156117e-16  ,1.00000000e+00]
+        "intercept":0.0014436105438752622,
+        "weights":[2.341204138797652e-05, -0.0005434975050638835, 0.9995400424150809]
     },
     "272":{
         "timestamp_col":["month" , "quarter"],
