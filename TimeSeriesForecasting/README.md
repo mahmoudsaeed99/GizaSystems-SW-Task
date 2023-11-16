@@ -18,8 +18,8 @@ Follow these steps to run the project.
     ]
 }
 
-3. to make it easy for you i attached file "dataNeeded.json" that include json data related to each dataset and num of rows are needed
-the data format {dataset_id(key:string):numOfRows(value:number)} here is an example :
+3. to make it easy for you i attached file "dataNeeded.json" that include json data related to each dataset and num of rows are needed,
+the data format is {dataset_id(key:string):numOfRows(value:number)} here is an example :
 {
     "9":5,
     "12":5,
