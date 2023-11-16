@@ -8,7 +8,7 @@ Follow these steps to run the project.
 
 1. after download the folder you can run the project in two easy way
     * you can open main.py and run the script
-    * open command line inside the folder and write python main.py
+    * open command line inside the folder and write `python main.py`
 2. send your data to this endpoint http://127.0.0.1:5000/predict using [POST method] as json data like this :
 {
     "dataset_id":...,
