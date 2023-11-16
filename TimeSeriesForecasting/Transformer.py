@@ -20,12 +20,12 @@ class TimestampFeatureSelection(BaseEstimator, TransformerMixin):
         mean_value = X['value'].mean()
         # X['value'].fillna(value=mean_value, inplace=True)
         X['timestamp'] = pd.to_datetime(X['timestamp'])
-        df['day_of_week'] = pd.to_datetime(df['timestamp']).dt.dayofweek
-        df['month'] = pd.to_datetime(df['timestamp']).dt.month
-        df['hour'] = pd.to_datetime(df['timestamp']).dt.hour
-        df['minute'] = pd.to_datetime(df['timestamp']).dt.minute
-        df['second'] = pd.to_datetime(df['timestamp']).dt.second
-        df['quarter'] = pd.to_datetime(df['timestamp']).dt.quarter
+        X['day_of_week'] = pd.to_datetime(X['timestamp']).dt.dayofweek
+        X['month'] = pd.to_datetime(X['timestamp']).dt.month
+        X['quarter'] = pd.to_datetime(X['timestamp']).dt.quarter
+        X['hour'] = pd.to_datetime(X['timestamp']).dt.hour
+        X['minute'] = pd.to_datetime(X['timestamp']).dt.minute
+        X['second'] = pd.to_datetime(X['timestamp']).dt.second
         # X = X.drop(columns=['timestamp'])
         # X = X.drop(['anomaly'] , axis = 1)
         self.cols.append('timestamp')
@@ -129,9 +129,15 @@ class TransformedData():
         # Apply the pipeline to the training data
         window_size = self.configs['window_avg']
         df_transformed = self.preprocessing_pipeline.fit_transform(X)
-        if l <= window_size:
-            df_transformed['moving_average'].iloc[-1] = None
-            df_transformed['moving_average'] = df_transformed['moving_average'].interpolate(method='linear')
+
+        # df_transformed['moving_average'].iloc[-1] = None
+        # print(df_transformed['moving_average'])
+        # df_transformed['moving_average'] = df_transformed['moving_average'].interpolate(method='linear')
+        # print(df_transformed['moving_average'])
+        # if l <= window_size:
+        #     df_transformed['moving_average'].iloc[-1] = None
+        #     df_transformed['moving_average'] = df_transformed['moving_average'].interpolate(method='linear')
+
         # df_transformed = DropOutliers().transform(df_transformed , interpolate="moving_average")
         # last_weighted_average = df_transformed['moving_average'].iloc[-2]
         #

@@ -905,7 +905,7 @@
     },
     "507":{
         "timestamp_col": ["hour"],
-        "window_avg":1,
+        "window_avg":2,
         "time_interval":["minutes",10],
         "lags":[],
         "intercept":3.5388358909926865e-16 ,
