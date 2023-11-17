@@ -123,7 +123,8 @@ class TransformedData():
             new_timestamp = X['timestamp'].iloc[-1] + timedelta(days=time_interval[1])
 
         X = X.ffill()
-        l = len(X)
+        X = X.bfill()
+        # l = len(X)
         r = pd.DataFrame({'timestamp':[new_timestamp] , "value":[None]})
         X = pd.concat([X, r], ignore_index=True)
         # Apply the pipeline to the training data
