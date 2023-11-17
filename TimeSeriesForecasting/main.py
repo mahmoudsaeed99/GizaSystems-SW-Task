@@ -36,7 +36,7 @@ def predict_data():
     #load only specific configs
     data = data[str(dataset_id)]
     # get model weight
-    weights = np.array(data['weights'])
+    weights = np.array(data['weight'])
     model.coef_ = weights
     model.intercept_ = data['intercept']
 
