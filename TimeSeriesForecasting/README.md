@@ -13,7 +13,7 @@ Follow these steps to run the project.
 {
     "dataset_id":...,
     "values":[
-        {"timestamp":"2021-07-01 00:00:00","value":-1.141247175408869},
+        {"time":"2021-07-01 00:00:00","value":-1.141247175408869},
 	......
     ]
 }
