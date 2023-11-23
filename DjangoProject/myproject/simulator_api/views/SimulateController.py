@@ -79,10 +79,10 @@ class SimulateController(ListCreateAPIView ):
         config = SQLDB()
         simulatorConfigs = config.read(simulator_id)
         #kafka to csv
-        kafkaToCsv = KafkaToCSV()
-        kafka_consumer = threading.Thread(target=kafkaToCsv.bridge , args=[simulatorConfigs['producer_name']])
-        kafka_consumer.daemon = True  # This allows the thread to exit when the main application exits.
-        kafka_consumer.start()
+        # kafkaToCsv = KafkaToCSV()
+        # kafka_consumer = threading.Thread(target=kafkaToCsv.bridge , args=[simulatorConfigs['producer_name']])
+        # kafka_consumer.daemon = True  # This allows the thread to exit when the main application exits.
+        # kafka_consumer.start()
         #------------
         # make exception handling to catch error
         try:
