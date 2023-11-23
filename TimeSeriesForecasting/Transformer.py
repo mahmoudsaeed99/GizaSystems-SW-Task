@@ -113,7 +113,7 @@ class TransformedData():
             ])
 
     def transform(self , X):
-        X['timestamp'] = pd.to_datetime(X['timestamp'])
+        X['timestamp'] = pd.to_datetime(X['time'])
         time_interval = self.configs['time_interval']
         if time_interval[0] == "minutes":
             new_timestamp = X['timestamp'].iloc[-1] + timedelta(minutes=time_interval[1])
