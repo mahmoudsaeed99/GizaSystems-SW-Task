@@ -12,6 +12,7 @@ class SQLDB(DB):
 
     def read(self , Id):
         simulator = Simulator.objects.all().filter(id =Id)
+        print(simulator[0])
         configs = simulator[0].dataConfig.all()
         simulator = Simulator.objects.all().filter(id =Id).values()[0]
         dataset = []

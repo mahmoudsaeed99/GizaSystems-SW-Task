@@ -15,7 +15,7 @@ from .KafkaToCSV import KafkaToCSV
 from multiprocessing import Process
 import psutil
 import threading
-
+import json
 threads = {}
 
 class SimulateController(ListCreateAPIView ):
@@ -23,45 +23,6 @@ class SimulateController(ListCreateAPIView ):
     serializer_class = SimulateSerializer
     filter_backends = (SearchFilter,)
     search_fields = ('=id',)
-
-    def post(self, request, *args, **kwargs):
-        """
-           receive simulator data and pass each data to the specific model
-
-        """
-        # return(SimulateSerializer().create(request))
-        try:
-            if (request.data["producer_type"].lower() == "kafka"):
-                if ("producer_name" not in request.data.keys() or request.data["producer_name"].lower() == ""):
-                    raise Exception("you should add kafka topic name")
-
-            dataset_data = request.data.pop('dataset', [])
-            serielizer = SimulateSerializer(data=request.data)
-            print("request.data:", request.data)
-            print("dataset_data:", dataset_data)
-            # simulate =  self.create(simulate , 'custom', **kwargs )
-            print(serielizer.is_valid())
-            if serielizer.is_valid():
-                serielizer.save()
-                items = serielizer.data['id']
-                print(1)
-                configs = ConfigController().add(dataset_data, items, **kwargs)
-            # else:
-            #     raise Exception("not valid simulator data")
-        except Exception as e:
-            print("error in SimulateControl "+str(e))
-        return Response(request.data)
-
-
-    def get(self,request, *args, **kwargs):
-        """
-            return simulator using simulator_id
-
-        """
-        simulator_id = request.GET['search']
-        config = SQLDB()
-        simulatorConfigs = config.read(simulator_id)
-        return Response(simulatorConfigs)
 
     @api_view(['GET'])
     def runSimulator(request):
@@ -76,8 +37,12 @@ class SimulateController(ListCreateAPIView ):
             return Response(error)
 
         SimulateController().update_status(simulator_id ,"Running")
+        # Read Data
         config = SQLDB()
-        simulatorConfigs = config.read(simulator_id)
+        simulator = Simulator.objects.get(id=simulator_id)
+        simulatorConfigs = json.dumps(SimulateSerializer(simulator).data)
+        simulatorConfigs = json.loads(simulatorConfigs)
+        # simulatorConfigs = SimulateSerializer().to_representation(simulator).data
         #kafka to csv
         # kafkaToCsv = KafkaToCSV()
         # kafka_consumer = threading.Thread(target=kafkaToCsv.bridge , args=[simulatorConfigs['producer_name']])
@@ -168,3 +133,4 @@ class SimulateController(ListCreateAPIView ):
         """
         simulator = Simulator.objects.get(pk = simulator_id)
         return simulator.status
+

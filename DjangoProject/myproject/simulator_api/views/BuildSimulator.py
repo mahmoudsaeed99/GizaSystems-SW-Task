@@ -28,22 +28,25 @@ class BuildSimulator():
         from .SimulateController import SimulateController
         meta_data = []
         counter = 0
-
         if self.simulatorConfigs['endDate'] == '':
             endDate = self.simulatorConfigs['startDate'] + timedelta(days=self.simulatorConfigs['dataSize'])
         else:
             endDate = self.simulatorConfigs['endDate']
 
-        time_series_generate = TimeSeriesGeneration(self.simulatorConfigs['startDate'] ,endDate)
 
+        time_series_generate = TimeSeriesGeneration(self.simulatorConfigs['startDate'] ,endDate)
         # time.sleep(20)
+
         producer = ProducerFactory().createProducer(self.simulatorConfigs['producer_type'])
         fileName = self.simulatorConfigs['producer_type']
-        for i in self.simulatorConfigs['dataset']:
+
+        for i in self.simulatorConfigs['data']:
             date_rng = time_series_generate.generate(i['frequency'])
 
-            for j in i['components']:
+
+            for j in i['seasonality_components']:
                 # check threading with sleep() function
+
 
                 seasonal_component = SeasonalComponent().add_component(date_rng,j['multiplier'],
                                                                     j['frequency'],j['amplitude'],j['phase_shift'],
@@ -76,7 +79,7 @@ class BuildSimulator():
                 counter +=1
                 # added to csv only
                 if self.simulatorConfigs['producer_type'].lower() == "csv":
-                    fileName = "E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/"+str(fileName)+"/"+str(i['id'])+"_"+str(j['id']) + '.csv'
+                    fileName = "E:/SW/GizaSystems-SW-Task/DjangoProject/myproject/dataSet/"+str(fileName)+"/"+str(i['id'])+"_"+str(j['id']) + '.csv'
                     producer.saveData(df,fileName)
                 # added to kafka only
                 if self.simulatorConfigs['producer_type'].lower() == "kafka":

@@ -11,6 +11,9 @@ warnings.filterwarnings('ignore')
 app = Flask(__name__)
 # from sklearn.externals import joblib
 # loaded_calibrated_model = joblib.load('knn_model.joblib')
+import pickle
+# loaded_model = pickle.load(open('knnpickle_file', 'rb'))
+# result = loaded_model.predict(X_test)
 loaded_calibrated_model = KNeighborsClassifier(n_neighbors=3, p=1, weights='distance')
 @app.route("/calibrated_AutoML/predict" , methods = ['POST'])
 def predict():

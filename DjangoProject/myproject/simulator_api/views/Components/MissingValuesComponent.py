@@ -21,7 +21,7 @@ class MissingValuesComponent(AdditionalComponent):
         Returns:
             numpy.ndarray: The time series data with missing values.
         """
-        num_missing = int(len(data) * percentage_missing)
+        num_missing = int(len(data) * float(percentage_missing))
         missing_indices = np.random.choice(len(data), size=num_missing, replace=False)
 
         data_with_missing = data.copy()
