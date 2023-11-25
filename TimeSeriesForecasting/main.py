@@ -41,7 +41,6 @@ def predict_data():
     model.intercept_ = data['intercept']
 
     df = TransformedData(data).transform(df)
-    print(df)
     df = df.tail(1)
     df_test = df.drop(['value'], axis=1)
     p = model.predict(df_test)
