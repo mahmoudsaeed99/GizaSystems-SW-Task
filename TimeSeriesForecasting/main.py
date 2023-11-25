@@ -44,7 +44,7 @@ def predict_data():
     df = df.tail(1)
     df_test = df.drop(['value'], axis=1)
     p = model.predict(df_test)
-    dic = {"prediction":list(p)}
+    dic = {"prediction":p[0]}
     return json.dumps(dic)
 if __name__ == "__main__":
     app.run(debug = True )        
