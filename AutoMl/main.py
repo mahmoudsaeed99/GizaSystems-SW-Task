@@ -18,7 +18,7 @@ df_train = pd.read_csv("Train_Split.csv")
 df_train.drop(['variance'], axis=1, inplace=True)
 
 # Create and fit KNeighborsClassifier
-loaded_calibrated_model = KNeighborsClassifier(n_neighbors=3, p=1, weights='distance')
+loaded_calibrated_model = KNeighborsClassifier(n_neighbors=5, p=1, weights='distance')
 loaded_calibrated_model.fit(df_train.drop(['y'], axis=1), df_train['y'])
 
 @app.route("/calibrated_AutoML/predict" , methods = ['POST'])
@@ -29,16 +29,9 @@ def predict():
     df = pd.DataFrame(data, index=[0])
     if "variance" in df.columns:
         df.drop(['variance'] , axis = 1 , inplace = True)
-    # Get the indices of the k-nearest neighbors
-    k_neighbors_indices = loaded_calibrated_model.kneighbors(df, return_distance=False).flatten()
 
-    # Get the labels of the k-nearest neighbors
-    k_neighbors_labels = df_train.iloc[k_neighbors_indices]['y']
-
-    # Calculate the predicted probability for the positive class
-    predicted_probability_positive_class = k_neighbors_labels.mean()
     prob_positive_class = loaded_calibrated_model.predict_proba(df)
-    result = {"output": int(prob_positive_class[:, 1].item())}
+    result = {"output": prob_positive_class[:, 1].item()}
     return jsonify(result)
 
 if __name__ == "__main__":
