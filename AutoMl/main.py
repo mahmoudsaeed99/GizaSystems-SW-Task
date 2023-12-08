@@ -37,7 +37,6 @@ def predict():
 
     # Calculate the predicted probability for the positive class
     predicted_probability_positive_class = k_neighbors_labels.mean()
-    print(predicted_probability_positive_class)
     prob_positive_class = loaded_calibrated_model.predict_proba(df)
     result = {"output": int(prob_positive_class[:, 1].item())}
     return jsonify(result)
