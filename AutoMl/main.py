@@ -6,6 +6,7 @@ import json
 from flask import Flask ,jsonify , request
 import warnings
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.calibration import CalibratedClassifierCV
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
