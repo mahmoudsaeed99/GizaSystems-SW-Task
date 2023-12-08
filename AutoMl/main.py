@@ -20,7 +20,8 @@ df_train.drop(['variance'], axis=1, inplace=True)
 # Create and fit KNeighborsClassifier
 loaded_calibrated_model = KNeighborsClassifier(n_neighbors=5, p=1, weights='distance')
 loaded_calibrated_model.fit(df_train.drop(['y'], axis=1), df_train['y'])
-
+calibrated_model = CalibratedClassifierCV(loaded_calibrated_model, method='sigmoid', cv='prefit')
+calibrated_model.fit(df_train.drop(['y'], axis=1), df_train['y'])
 @app.route("/calibrated_AutoML/predict" , methods = ['POST'])
 def predict():
 
@@ -30,7 +31,7 @@ def predict():
     if "variance" in df.columns:
         df.drop(['variance'] , axis = 1 , inplace = True)
 
-    prob_positive_class = loaded_calibrated_model.predict_proba(df)
+    prob_positive_class = calibrated_model.predict_proba(df)
     result = {"output": prob_positive_class[:, 1].item()}
     return jsonify(result)
 
